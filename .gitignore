@@ -1,0 +1,15 @@
+*/target/
+**/.gradle
+**/.classpath
+**/.project
+**/.prefs
+**/.classpath
+**/*.class
+**/.project
+**/.lst
+**/.settings
+antrun
+.DS_Store
+.project
+.classpath
+.factorypath

@@ -1,0 +1,27 @@
+version: "3.3"
+services:
+  mobile-service:
+    image: mobileimg:v1
+    container_name: mobile
+    restart: always
+    deploy:
+      replicas: 1
+    environment:
+      PORT: 5000
+      CONTEXT: mobile
+      LOGS_PATH: logs
+      BD_ADDR: 192.168.0.15
+      BD_ADDR: 192.168.0.15
+      BD_PORT: 3306
+      BD_NAME: emulator
+      BD_USER: emulator
+      BD_PASS: emulator
+    volumes:
+      - $PWD/server_logs:/app/logs
+    networks:
+       - db-net
+    ports:
+      - 8089:8089
+
+networks:
+  db-net:
