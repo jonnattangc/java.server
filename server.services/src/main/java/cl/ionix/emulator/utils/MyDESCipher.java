@@ -13,13 +13,13 @@ import cl.ionix.emulator.interfaces.ICipher;
  * Clase de Cifrado
  * 
  * @author Jonnattan Griffiths
- * @since Programa para TEST IONIX
+ * @since Programa para TEST
  * @version 1.0 del 16-01-2020
  * 
  */
 public class MyDESCipher implements ICipher {
 
-	private final static String key = "ionix123456";
+	private final static String key = "jonnattan12345";
 	private DESKeySpec keySpec = null;
 	private SecretKeyFactory keyFactory = null;
 	private Cipher cipher = null;

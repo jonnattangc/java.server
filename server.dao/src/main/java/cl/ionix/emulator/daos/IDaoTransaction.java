@@ -14,7 +14,7 @@ import org.springframework.data.repository.query.Param;
  * Clase DAOde transacciones
  * 
  * @author Jonnattan Griffiths
- * @since EMULADOR APITEC
+ * @since EMULADOR 
  * @version 1.0 del 22-06-2020
  * 
  */

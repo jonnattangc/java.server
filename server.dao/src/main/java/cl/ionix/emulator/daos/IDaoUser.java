@@ -8,7 +8,7 @@ import cl.ionix.emulator.User;
  * Clase DAO de Usuarios
  * 
  * @author Jonnattan Griffiths
- * @since EMULADOR APITEC
+ * @since EMULADOR 
  * @version 1.0 del 22-06-2020
  * 
  */

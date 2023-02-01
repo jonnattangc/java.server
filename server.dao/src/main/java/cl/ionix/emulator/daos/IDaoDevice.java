@@ -13,7 +13,7 @@ import cl.ionix.emulator.Device;
  * Clase DAO de dispositivos
  * 
  * @author Jonnattan Griffiths
- * @since EMULADOR APITEC
+ * @since EMULADOR 
  * @version 1.0 del 22-06-2020
  * 
  */

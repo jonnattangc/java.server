@@ -84,7 +84,7 @@ public class MySHAAlgoritms implements ISignature {
 	}
 	
 	public static void main(String[] args) {
-		String msg = "Clave_Cifrado_Ionix_Edg";
+		String msg = "Clave_Cifrado_Para_Test";
 		MySHAAlgoritms sha = new MySHAAlgoritms();
 		System.out.println("Original: " + msg );
 		System.out.println("SHA-256 : " + sha.getHexSHA256(msg, false) );

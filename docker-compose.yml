@@ -1,23 +1,23 @@
 version: "3.3"
 services:
-  mobile-service:
-    image: mobileimg:v1
-    container_name: mobile
+  atlantico-service:
+    image: atlantico-server:v1
+    container_name: atlantico-server
     restart: always
     deploy:
       replicas: 1
     environment:
-      PORT: 5000
-      CONTEXT: mobile
-      LOGS_PATH: logs
+      PORT: 8089
+      CONTEXT: /mobile
       BD_ADDR: 192.168.0.15
       BD_ADDR: 192.168.0.15
       BD_PORT: 3306
       BD_NAME: emulator
       BD_USER: emulator
       BD_PASS: emulator
+      LOG_LEVEL: info
     volumes:
-      - $PWD/server_logs:/app/logs
+      - $PWD/application.yml:/app/application.yml
     networks:
        - db-net
     ports:

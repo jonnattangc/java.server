@@ -24,7 +24,7 @@ import lombok.Data;
  * Clase tupla de la base de datos para configuration
  * 
  * @author Jonnattan Griffiths
- * @since EMULADOR APITEC
+ * @since EMULADOR 
  * @version 1.0 del 22-06-2020
  * 
  */

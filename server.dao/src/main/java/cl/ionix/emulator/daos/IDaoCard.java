@@ -14,7 +14,7 @@ import cl.ionix.emulator.Card;
  * Clase DAO de tarjetas
  * 
  * @author Jonnattan Griffiths
- * @since EMULADOR APITEC
+ * @since EMULADOR 
  * @version 1.0 del 22-06-2020
  * 
  */

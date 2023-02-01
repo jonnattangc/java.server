@@ -3,9 +3,9 @@ spring:
     name: Emulador 
   profiles: "default"
   datasource:
-    url: jdbc:mysql://192.168.0.15:3306/emulator?serverTimezone=America/Santiago&useSSL=false&allowPublicKeyRetrieval=true
-    username: emulator
-    password: emulator
+    url: jdbc:mysql://${BD_ADDR}:${BD_PORT}/${BD_NAME}?serverTimezone=America/Santiago&useSSL=false&allowPublicKeyRetrieval=true&autoReconnect=true
+    username: ${BD_USER}
+    password: ${BD_PASS}
     driverClassName: com.mysql.jdbc.Driver
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect
@@ -21,13 +21,15 @@ spring:
 
 server:
   address: 0.0.0.0
-  port: 8089
+  port: ${PORT}
+  servlet:
+    context-path: ${CONTEXT}
 
 logging:
   level:
     org:
       hibernate:
-        SQL: debug
+        SQL: ${LOG_LEVEL}
 
 http:
   timeout:
