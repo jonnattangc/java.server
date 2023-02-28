@@ -18,14 +18,14 @@ public class AllRequestFilter implements Filter {
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
-		logger.info("######################################################################");
+		logger.info("====================== INIT ===========================");
 		logger.info("URI           :" + httpRequest.getRequestURI());
 		logger.info("RemoteAddr    :" + httpRequest.getRemoteAddr());
 		logger.info("RemotePort    :" + httpRequest.getRemotePort());
 		logger.info("Protocol HTTP :" + httpRequest.getProtocol());
 		logger.info("Real IP :" + httpRequest.getHeader("X-Real-IP"));
-		logger.info("#####################################################################");
 		chain.doFilter(httpRequest, response);
+		logger.info("====================== END ===========================");
 	}
 
 }

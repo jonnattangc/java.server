@@ -4,6 +4,8 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -15,6 +17,7 @@ import javax.persistence.TemporalType;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import cl.ionix.emulator.enums.EUserType;
 import lombok.Data;
 
 /**
@@ -34,6 +37,12 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	@Column(name = "rut", nullable = false, unique = true)
+	private String rut;
+	
+	@Column(name = "mail", nullable = false, unique = true)
+	private String mail;
+	
 	@Column(name = "updated_at")
 	@Temporal(TemporalType.TIMESTAMP)
 	@DateTimeFormat(pattern = "dd-MM-yyyy'T'HH:mm:ss")
@@ -50,11 +59,30 @@ public class User {
 	@Column(name = "password")
 	private String password;
 	
+	@Column(name = "age")
+	private Integer age;
+	
+	@Column(name = "city")
+	private String city;
+	
 	@Column(name = "access_token")
 	private String accessToken;
 	
 	@Column(name = "realm")
 	private String realm;
+	
+	@Column(name = "full_name")
+	private String fullName;
+	
+	@Column(name = "address")
+	private String address;
+	
+	@Column(name = "mobile")
+	private String mobile;
+	
+	@Column(name = "type", nullable = false)
+	@Enumerated(EnumType.STRING)
+	private EUserType type;
 	
 	@PrePersist
 	public void prePersist() {

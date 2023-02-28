@@ -30,7 +30,7 @@ import cl.ionix.emulator.utils.UtilConst;
 @Service
 public class TransactionService implements ITransactions {
 
-	private final static Logger logger = Logger.getLogger(TransactionService.class.getName());
+	private static final Logger logger = Logger.getLogger(TransactionService.class.getName());
 
 	@Autowired
 	private IDaoTransaction transactionRepository;
@@ -53,8 +53,8 @@ public class TransactionService implements ITransactions {
 			String body = util.toJson(request);
 			String header = util.toJson(headerRx);
 
-			logger.info("Request Body: " + body);
-			logger.info("Request Header: " + header);
+			logger.info(String.format("Request Body: %s", body));
+			logger.info(String.format("Request Header: %s", header));
 			String dataCard = request.getToken().getData();
 
 			String cardNumber = UtilConst.cardDefault;

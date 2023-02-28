@@ -14,7 +14,8 @@ import cl.ionix.emulator.User;
  */
 public interface IDaoUser extends CrudRepository<User, Long> {
 
-	public User findByAccessToken(String token);
-	public User findByNameUserAndPassword(String nameUser, String password);
-
+	public User findByAccessToken(final String token);
+	public User findByNameUserAndPassword(final String nameUser, final String password);
+	public User findByRut(final String rut);
+	public User findByMail(final String mail);
 }

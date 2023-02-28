@@ -1,11 +1,12 @@
 package cl.ionix.emulator.controllers;
 
 import java.nio.ByteBuffer;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ import cl.ionix.emulator.dto.CommerceTokenResponseDTO;
 @RequestMapping("/commerceapps")
 public class AppCommeController {
 
-	private final static Logger logger = Logger.getLogger(AppCommeController.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(AppCommeController.class);
 
 	@PostMapping(path = "/sendMail")
 	public ResponseEntity<CommerceMailResponseDTO> sendMail(HttpServletRequest request,
@@ -52,14 +53,12 @@ public class AppCommeController {
 				bb.get(bytes);
 				body = new String(bytes);
 			}
-			bb = null;
-
-			logger.info("Request Body    : " + body);
+			logger.info("Body is %s {}", body);
 		} catch (Exception e) {
-			// TODO: handle exception
+			logger.error("Error: ", e);
 		}
 
-		return new ResponseEntity<CommerceMailResponseDTO>(response, HttpStatus.OK);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 	@PostMapping(path = "/getToken", consumes = { MediaType.APPLICATION_FORM_URLENCODED_VALUE }, produces = {

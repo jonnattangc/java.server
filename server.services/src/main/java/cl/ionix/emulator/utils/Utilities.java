@@ -2,7 +2,6 @@ package cl.ionix.emulator.utils;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.bouncycastle.util.encoders.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +16,6 @@ import cl.ionix.emulator.interfaces.IUtilities;
 
 @Component
 public class Utilities implements IUtilities {
-
-	private final static Logger logger = Logger.getLogger(Utilities.class.getName());
 
 	@Autowired
 	private EncrypterBusinessLogicService rsaCipher;
@@ -40,7 +37,6 @@ public class Utilities implements IUtilities {
 	@Override
 	public String SHA256(String data) {
 		String result = signature.getSignature(data);
-		logger.info("SHA-256(" + data + "/" + result + ")");
 		return result;
 	}
 
@@ -59,7 +55,7 @@ public class Utilities implements IUtilities {
 		}
 		return result;
 	}
-	
+
 	@Override
 	public String encryptRSA(String data) {
 		String result = "";
@@ -69,7 +65,7 @@ public class Utilities implements IUtilities {
 				byte[] encryptData = rsaCipher.encrypt(clearData);
 				byte[] bytes = Base64.encode(encryptData);
 				result = new String(bytes);
-				
+
 			} catch (Exception e) {
 				e.printStackTrace();
 				result = "";
@@ -77,8 +73,6 @@ public class Utilities implements IUtilities {
 		}
 		return result;
 	}
-
-	
 
 	@Override
 	public String toJson(Object obj) {
@@ -118,7 +112,7 @@ public class Utilities implements IUtilities {
 
 		return result;
 	}
-	
+
 	@Override
 	public String getTokenCard(String data) {
 		String sha = SHA256(data);

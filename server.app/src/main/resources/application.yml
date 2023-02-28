@@ -3,7 +3,7 @@ spring:
     name: Emulador 
   profiles: "default"
   datasource:
-    url: jdbc:mysql://192.168.0.15:3306/emulator?serverTimezone=America/Santiago&useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://dev.jonnattan.com/emulator?autoReconnect=true&useSSL=false&useTimezone=true&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: emulator
     password: emulator
     driverClassName: com.mysql.jdbc.Driver
@@ -22,12 +22,14 @@ spring:
 server:
   address: 0.0.0.0
   port: 8089
+  servlet:
+    context-path: /jonnattan
   
 logging:
   level:
     org:
       hibernate:
-        SQL: debug
+        SQL: info
     
 http:
   timeout:

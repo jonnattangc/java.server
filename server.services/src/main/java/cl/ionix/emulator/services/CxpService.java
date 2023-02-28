@@ -82,10 +82,10 @@ public class CxpService implements ICxp {
 		keysCotizacion = keysCotizacion.replace("\n", "");
 		cotkeys = keysCotizacion.split(",");
 
-		logger.info("Env[" + enviroment + "] Base URL: " + urls[enviroment.ordinal()] + " Size: " + urls.length);
-		logger.info("Env[" + enviroment + "] COT Key : " + cotkeys[enviroment.ordinal()] + " Size: " + cotkeys.length);
-		logger.info("Env[" + enviroment + "] GEO Key : " + geokeys[enviroment.ordinal()] + " Size: " + geokeys.length);
-		logger.info("Env[" + enviroment + "] OT Key  : " + otKey[enviroment.ordinal()] + " Size: " + otKey.length);
+		//logger.info("Env[" + enviroment + "] Base URL: " + urls[enviroment.ordinal()] + " Size: " + urls.length);
+		//logger.info("Env[" + enviroment + "] COT Key : " + cotkeys[enviroment.ordinal()] + " Size: " + cotkeys.length);
+		//logger.info("Env[" + enviroment + "] GEO Key : " + geokeys[enviroment.ordinal()] + " Size: " + geokeys.length);
+		//logger.info("Env[" + enviroment + "] OT Key  : " + otKey[enviroment.ordinal()] + " Size: " + otKey.length);
 	}
 
 	@Override
