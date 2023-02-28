@@ -1,7 +1,9 @@
 package cl.ionix.emulator.services;
 
-import java.util.logging.Logger;
+import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
@@ -12,36 +14,39 @@ import cl.ionix.emulator.dto.EdrPaymentLogonRequestDTO;
 import cl.ionix.emulator.dto.EdrPaymentLogonResponseDTO;
 import cl.ionix.emulator.interfaces.IPrm;
 import cl.ionix.emulator.utils.EmulatorException;
+import cl.ionix.emulator.utils.UtilConst;
 
 @Service
 public class PrmService implements IPrm {
 
-	private final static Logger logger = Logger.getLogger(PrmService.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(PrmService.class);
 
 	@Autowired
 	ObjectMapper objectMapper;
-	
+
 	@Override
-	public EdrPaymentLogonResponseDTO logon(String requestor, HttpHeaders headerRx,
-			EdrPaymentLogonRequestDTO request) throws EmulatorException {
+	public EdrPaymentLogonResponseDTO logon(String requestor, HttpHeaders headerRx, EdrPaymentLogonRequestDTO request)
+			throws EmulatorException {
 		logger.info("Servicio LOGON Prm");
 		try {
 			String body = objectMapper.writeValueAsString(request);
 			String header = objectMapper.writeValueAsString(headerRx);
-			
-			String requestid = headerRx.get("requestid").get(0);
-			String client_id = headerRx.get("client_id").get(0);
-			String access_token = headerRx.get("access_token").get(0);
-			
-			logger.info("requestid   : " + requestid);
-			logger.info("client_id   : " + client_id);
-			logger.info("access_token: " + access_token);
-			
-			logger.info("Request Body  : " + body);
-			logger.info("Request Header: " + header);
-			
+
+			List<String> list = headerRx.get("requestid");
+			String requestId = list != null && !list.isEmpty() ? list.get(0) : UtilConst.NO_INFO;
+			list = headerRx.get("client_id");
+			String clientId = list != null && !list.isEmpty() ? list.get(0) : UtilConst.NO_INFO;
+			list = headerRx.get("access_token");
+			String accessToken = list != null && !list.isEmpty() ? list.get(0) : UtilConst.NO_INFO;
+
+			logger.info("requestid   : {}", requestId);
+			logger.info("client_id   : {}", clientId);
+			logger.info("access_token: {}", accessToken);
+
+			logger.info("Request Body  : {}", body);
+			logger.info("Request Header: {}", header);
+
 		} catch (Exception e) {
-			logger.severe("Error: " + e.getMessage());
 			throw new EmulatorException(e.getMessage());
 		}
 		return new EdrPaymentLogonResponseDTO();

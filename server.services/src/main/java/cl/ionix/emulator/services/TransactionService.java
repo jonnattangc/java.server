@@ -44,8 +44,8 @@ public class TransactionService implements ITransactions {
 
 	@Override
 	@Transactional
-	public EdrPaymentAuthorizeResponseDTO createTransaction(EdrPayAuthorizeRequestDTO request,
-			HttpHeaders headerRx) throws EmulatorException {
+	public EdrPaymentAuthorizeResponseDTO createTransaction(EdrPayAuthorizeRequestDTO request, HttpHeaders headerRx)
+			throws EmulatorException {
 		logger.info("Service de transacciones");
 
 		EdrPaymentAuthorizeResponseDTO response = new EdrPaymentAuthorizeResponseDTO();
@@ -57,13 +57,12 @@ public class TransactionService implements ITransactions {
 			logger.info(String.format("Request Header: %s", header));
 			String dataCard = request.getToken().getData();
 
-			String cardNumber = UtilConst.cardDefault;
+			String cardNumber = UtilConst.DEFAULT_CARD;
 
 			Map<String, Object> map = util.toMap(util.decryptRSA(dataCard));
 			if (map != null) {
 				String value = (String) map.get("cryptogram");
-				if( value != null && value.startsWith(UtilConst.prefijoCyptogram) )
-				{
+				if (value != null && value.startsWith(UtilConst.CRYPTO_PREF)) {
 					logger.info("Criptograma: " + value);
 					Device device = deviceRepository.findByCryptogram(value);
 					if (device != null) {
@@ -71,7 +70,7 @@ public class TransactionService implements ITransactions {
 						Card card = cardRepository.findByToken(device.getCard());
 						if (card != null)
 							cardNumber = card.getCardNumber();
-					}else
+					} else
 						logger.info("####### dispositivo no encontrado");
 				}
 			}
@@ -92,7 +91,7 @@ public class TransactionService implements ITransactions {
 			transaction.setAmount(amount);
 			transactionRepository.save(transaction);
 
-			if (!cardNumber.equals(UtilConst.cardDefault)) {
+			if (!cardNumber.equals(UtilConst.DEFAULT_CARD)) {
 				Card card = cardRepository.findByCardNumber(cardNumber);
 				Long valor = Long.parseLong(amount);
 				if (card != null) {
@@ -122,8 +121,8 @@ public class TransactionService implements ITransactions {
 
 	@Override
 	@Transactional
-	public EdrPaymentReverseResponseDTO reverseTransaction(EdrPaymentReverseRequestDTO request,
-			HttpHeaders headerRx) throws EmulatorException {
+	public EdrPaymentReverseResponseDTO reverseTransaction(EdrPaymentReverseRequestDTO request, HttpHeaders headerRx)
+			throws EmulatorException {
 
 		EdrPaymentReverseResponseDTO response = new EdrPaymentReverseResponseDTO();
 		logger.info("Servicio de reversa");
@@ -152,12 +151,12 @@ public class TransactionService implements ITransactions {
 					trans.setMcc("EMULATOR-MCC");
 					response.setTransactionex(trans);
 					// se devuelve la plata a la tarjeta
-					Card card = cardRepository.findByCardNumber( transaction.getCard() );
-					if(card != null ) {
+					Card card = cardRepository.findByCardNumber(transaction.getCard());
+					if (card != null) {
 						Long value = card.getAmount();
 						value += Long.parseLong(transaction.getAmount());
-						trans.setAvailablebalance(String.format("%.1f", (double)value));
-						cardRepository.saveAmountById(value, card.getId(), new Date() );
+						trans.setAvailablebalance(String.format("%.1f", (double) value));
+						cardRepository.saveAmountById(value, card.getId(), new Date());
 					}
 
 				} else
@@ -175,16 +174,15 @@ public class TransactionService implements ITransactions {
 
 	@Override
 	@Transactional
-	public EdrPaymentCreateCryptogramResponseDTO createCriptogram(
-			EdrPaymentCreateCryptogramRequestDTO dataCreate, HttpHeaders headerRx, String token)
-			throws EmulatorException {
+	public EdrPaymentCreateCryptogramResponseDTO createCriptogram(EdrPaymentCreateCryptogramRequestDTO dataCreate,
+			HttpHeaders headerRx, String token) throws EmulatorException {
 
 		EdrPaymentCreateCryptogramResponseDTO response = new EdrPaymentCreateCryptogramResponseDTO();
 		logger.info("Service de criptograma");
 		try {
 			String body = util.toJson(dataCreate);
 			String header = util.toJson(headerRx);
-			String cryptogram = UtilConst.prefijoCyptogram + util.SHA256(body);
+			String cryptogram = UtilConst.CRYPTO_PREF + util.SHA256(body);
 			logger.info("Request Body: " + body);
 			logger.info("Request Header: " + header);
 			Device device = deviceRepository.findByToken(token);
