@@ -1,5 +1,6 @@
 package cl.ionix.emulator.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -12,11 +13,14 @@ import cl.ionix.emulator.utils.MySHAAlgoritms;
 
 @Configuration
 public class CipherConfig {
+	
+	@Value("${app.secure.aes.key:0112f48125034f8fa42aef2441773793}")
+	private String aesKey;
 
 	@Bean("AES")
 	@Primary
 	public ICipher getAesCipher() {
-		return new MyAESCipher();
+		return new MyAESCipher( aesKey );
 	}
 
 	@Bean("DES")

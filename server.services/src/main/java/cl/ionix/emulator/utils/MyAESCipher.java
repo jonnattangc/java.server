@@ -1,6 +1,7 @@
 package cl.ionix.emulator.utils;
 
 import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 import java.security.spec.KeySpec;
 
 import javax.crypto.Cipher;
@@ -16,30 +17,30 @@ import cl.ionix.emulator.interfaces.ICipher;
 
 public class MyAESCipher implements ICipher {
 
-	private static final String AES_CIPHER = "AES/CBC/PKCS5Padding";
+	private static final String AES_CIPHER = "AES/CBC/NoPadding";
 	private static final String AES_FACTORY = "PBKDF2WithHmacSHA256";
 	private static final String AES_KEY = "AES";
-	private static final String KEY = "ClaveSecreta";
+	
 	private IvParameterSpec ivspec = null;
 	private SecretKeySpec secretKeySpec = null;
 
-	public MyAESCipher() {
-		
-		initialize();
-	}
-
-	private void initialize() {
+	
+	public MyAESCipher( String aesKey ) {
 		try {
-			byte[] iv = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-			ivspec = new IvParameterSpec(iv);
+			SecureRandom random = new SecureRandom();
+		    byte[] bytesIV = new byte[16];
+		    random.nextBytes(bytesIV); // Random initialization vector
+			this.ivspec = new IvParameterSpec(bytesIV);
 			SecretKeyFactory factory = SecretKeyFactory.getInstance(AES_FACTORY);
-			KeySpec spec = new PBEKeySpec(KEY.toCharArray(), new byte[20], 65536, 256);
+			KeySpec spec = new PBEKeySpec(aesKey.toCharArray(), new byte[20], 65536, 256);
 			SecretKey tmp = factory.generateSecret(spec);
-			secretKeySpec = new SecretKeySpec(tmp.getEncoded(), AES_KEY);
+			this.secretKeySpec = new SecretKeySpec(tmp.getEncoded(), AES_KEY);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+
+
 
 	@Override
 	public String encrypt(String aDato) throws Exception {
@@ -62,12 +63,12 @@ public class MyAESCipher implements ICipher {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		ICipher cipher = new MyAESCipher();
+		ICipher cipher = new MyAESCipher("pepitoclavounclavito");
 		String dato = "1122334455667788";
 		String encryptData = cipher.encrypt(dato);
 		String decryptData = cipher.decrypt(encryptData);
-		System.out.println("DATO    : " + dato );
-		System.out.println("EN CLARO: " + decryptData );
-		System.out.println("CIFRADO : " + encryptData );
+		System.err.println("DATO    : " + dato );
+		System.err.println("EN CLARO: " + decryptData );
+		System.err.println("CIFRADO : " + encryptData );
 	}
 }
