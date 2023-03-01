@@ -16,6 +16,7 @@ services:
       BD_USER: emulator
       BD_PASS: emulator
       LOG_LEVEL: info
+      AES_KEY: mAFaa#23csdas$5sdf12sght549u87y8adnjk
     volumes:
       - $PWD/application.yml:/app/application.yml
     networks:

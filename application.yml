@@ -1,6 +1,6 @@
 spring:
   application:
-    name: Emulador 
+    name: Emulador
   profiles: "default"
   datasource:
     url: jdbc:mysql://${BD_ADDR}:${BD_PORT}/${BD_NAME}?serverTimezone=America/Santiago&useSSL=false&allowPublicKeyRetrieval=true&autoReconnect=true
@@ -35,6 +35,11 @@ http:
   timeout:
     connect: 90
     read: 90
+
+app:
+  secure:
+    aes:
+      key: ${AES_KEY}
 
 cxp:
   select: 2
