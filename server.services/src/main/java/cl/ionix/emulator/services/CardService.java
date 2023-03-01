@@ -66,9 +66,7 @@ public class CardService implements ICard {
 			list = headerRx.get(UtilConst.ACCESS_TOKEN);
 			String accessToken = list != null && !list.isEmpty() ? list.get(0) : UtilConst.NO_INFO;
 
-			logger.info("requestid   : {}", requestId);
-			logger.info("client_id   : {}", clientId);
-			logger.info("access_token: {}", accessToken);
+			logger.info("requestid: {} client_id: {} access_token:{}", requestId, clientId, accessToken);
 
 			logger.info("Request Body  : {}", body);
 			logger.info("Request Header: {}", header);
@@ -261,9 +259,7 @@ public class CardService implements ICard {
 			list = headerRx.get(UtilConst.ACCESS_TOKEN);
 			String accessToken = list != null && !list.isEmpty() ? list.get(0) : UtilConst.NO_INFO;
 
-			logger.info("requestid   : {}", requestId);
-			logger.info("client_id   : {}", clientId);
-			logger.info("access_token: {}", accessToken);
+			logger.info("requestid: {} client_id: {} access_token:{}", requestId, clientId, accessToken);
 
 			// el token es del device
 			Device device = deviceRepository.findByToken(token);
@@ -310,9 +306,7 @@ public class CardService implements ICard {
 			list = headerRx.get(UtilConst.ACCESS_TOKEN);
 			String accessToken = list != null && !list.isEmpty() ? list.get(0) : UtilConst.NO_INFO;
 
-			logger.info("requestid   : {}", requestId);
-			logger.info("client_id   : {}", clientId);
-			logger.info("access_token: {}", accessToken);
+			logger.info("requestid: {} client_id: {} access_token:{}", requestId, clientId, accessToken);
 
 			logger.info("Request Body  : {}", body);
 			logger.info("Request Header: {}", header);

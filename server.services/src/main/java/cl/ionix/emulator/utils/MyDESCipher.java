@@ -8,6 +8,7 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 
 import cl.ionix.emulator.interfaces.ICipher;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Clase de Cifrado
@@ -19,26 +20,21 @@ import cl.ionix.emulator.interfaces.ICipher;
  */
 public class MyDESCipher implements ICipher {
 
-	private final static String key = "jonnattan12345";
+	private final String key;
+	private static final String ALG = "DES";
 	private DESKeySpec keySpec = null;
 	private SecretKeyFactory keyFactory = null;
 	private Cipher cipher = null;
 
 	public MyDESCipher() {
-		initialize();
-	}
-
-	private void initialize() {
+		this.key = "jonnattan12345";
 		try {
-			this.keySpec = new DESKeySpec(key.getBytes("UTF-8"));
+			this.keySpec = new DESKeySpec(key.getBytes(StandardCharsets.UTF_8));
 			this.keyFactory = SecretKeyFactory.getInstance("DES");
-			if (this.keySpec != null && this.keyFactory != null) {
-				{
-					SecretKey skey = this.keyFactory.generateSecret(this.keySpec);
-					this.cipher = Cipher.getInstance("DES");
-					this.cipher.init(Cipher.ENCRYPT_MODE, skey);
-				}
-			}
+			SecretKey skey = this.keyFactory.generateSecret(this.keySpec);
+			this.cipher = Cipher.getInstance(MyDESCipher.ALG);
+			this.cipher.init(Cipher.ENCRYPT_MODE, skey);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -52,13 +48,12 @@ public class MyDESCipher implements ICipher {
 			byte[] result = cipher.doFinal(bytes);
 			cipherText = Base64.getEncoder().encodeToString(result);
 		} else
-			new Exception("No se creo cifrador, se va en claro...");
+			throw new Exception("No se creo cifrador, se va en claro...");
 		return cipherText;
 	}
 
 	@Override
 	public String decrypt(String aDato) throws Exception {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

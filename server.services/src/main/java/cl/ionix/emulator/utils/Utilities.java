@@ -36,8 +36,7 @@ public class Utilities implements IUtilities {
 
 	@Override
 	public String SHA256(String data) {
-		String result = signature.getSignature(data);
-		return result;
+		return signature.getSignature(data);
 	}
 
 	@Override
@@ -91,7 +90,7 @@ public class Utilities implements IUtilities {
 	public Map<String, Object> toMap(String json) {
 		Map<String, Object> map = null;
 		try {
-			map = (Map<String, Object>) objectMapper.readValue(json, Map.class);
+			map = objectMapper.readValue(json, Map.class);
 		} catch (IOException | NullPointerException e) {
 			e.printStackTrace();
 		}

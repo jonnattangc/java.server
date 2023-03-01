@@ -1,7 +1,7 @@
 package cl.ionix.emulator.services;
 
-import java.util.logging.Logger;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +16,7 @@ import cl.ionix.emulator.utils.ConfException;
 @Service
 public class AppConfigService implements IConfigurations {
 
-	private final static Logger logger = Logger.getLogger(AppConfigService.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(AppConfigService.class);
 
 	@Autowired
 	private IDaoConfiguration configRepository;
@@ -29,7 +29,7 @@ public class AppConfigService implements IConfigurations {
 		try {
 			Configuration conf = configRepository.findByEndpoint(request.getEndPoint());
 			if (conf != null) {
-				if (request.getError()) {
+				if (request.getError().booleanValue()) {
 					conf.setCode(request.getCode());
 					conf.setMessage(request.getMessage());
 					conf.setType(TypeResponse.getType(request.getType()));
@@ -41,15 +41,14 @@ public class AppConfigService implements IConfigurations {
 					conf.setError(false);
 				}
 				logger.info("************** UPDATE CONFIGURACION **************** ");
-				logger.info("Se reporta Código error: " + conf.getCode());
-				logger.info("Se reporta Mensaje error: " + conf.getMessage());
-				logger.info("Se reporta Tipo error: " + conf.getType().toString());
+				logger.info("Se reporta Código error: {}", conf.getCode());
+				logger.info("Se reporta Mensaje error: {}", conf.getMessage());
+				logger.info("Se reporta Tipo error: {}", conf.getType());
 				logger.info("************************************************* ");
 				configRepository.save(conf);
 			} else
 				createConfigurations(request);
 		} catch (Exception e) {
-			logger.severe("Error: " + e.getMessage());
 			throw new ConfException("[" + e.getMessage() + "] Actualizando Configuración");
 		}
 		return response;
@@ -64,7 +63,7 @@ public class AppConfigService implements IConfigurations {
 			Configuration conf = new Configuration();
 			conf.setEndpoint(request.getEndPoint());
 
-			if (request.getError()) {
+			if (request.getError().booleanValue()) {
 				conf.setCode(request.getCode());
 				conf.setMessage(request.getMessage());
 				conf.setType(TypeResponse.getType(request.getType()));
@@ -76,14 +75,13 @@ public class AppConfigService implements IConfigurations {
 				conf.setError(false);
 			}
 			logger.info("************** CREATE CONFIGURACION **************** ");
-			logger.info("Se reporta Código error: " + conf.getCode());
-			logger.info("Se reporta Mensaje error: " + conf.getMessage());
-			logger.info("Se reporta Tipo error: " + conf.getType().toString());
+			logger.info("Se reporta Código error: {} ", conf.getCode());
+			logger.info("Se reporta Mensaje error: {} ", conf.getMessage());
+			logger.info("Se reporta Tipo error: {}", conf.getType());
 			logger.info("************************************************* ");
 			configRepository.save(conf);
 
 		} catch (Exception e) {
-			logger.severe("Error: " + e.getMessage());
 			throw new ConfException("[" + e.getMessage() + "] Creando Configuración");
 		}
 		return response;
@@ -101,7 +99,6 @@ public class AppConfigService implements IConfigurations {
 			} else
 				response = createConfigurations(request);
 		} catch (Exception e) {
-			logger.severe("Error: " + e.getMessage());
 			throw new ConfException(e.getMessage());
 		}
 		return response;
@@ -111,20 +108,18 @@ public class AppConfigService implements IConfigurations {
 	@Override
 	public void evaluateEndpoint(String endpoint) throws ConfException {
 		Configuration configuration = configRepository.findByEndpoint(endpoint);
-		if (configuration != null) {
-			if (configuration.getError()) {
-				logger.info("************** REPORTA ERROR POR CONFIGURACION **************** ");
-				logger.info("Se reporta Código error: " + configuration.getCode());
-				logger.info("Se reporta Mensaje error: " + configuration.getMessage());
-				logger.info("Se reporta Tipo error: " + configuration.getType().toString());
-				logger.info("*************************************************************** ");
-				// se provoca el internal error para quien consume el servicio
-				if (configuration.getType().equals(TypeResponse.HTTP_RESPONSE_500)) {
-					String nulo = null;
-					nulo.equals("nada");
-				}
-				throw new ConfException(configuration.getMessage(), configuration.getCode(), configuration.getType());
+		if (configuration != null && configuration.getError().booleanValue() ) {
+			logger.info("************** REPORTA ERROR POR CONFIGURACION **************** ");
+			logger.info("Se reporta Código error: {} ", configuration.getCode());
+			logger.info("Se reporta Mensaje error: {}", configuration.getMessage());
+			logger.info("Se reporta Tipo error: {}", configuration.getType());
+			logger.info("*************************************************************** ");
+			// se provoca el internal error para quien consume el servicio
+			if (configuration.getType().equals(TypeResponse.HTTP_RESPONSE_500)) {
+				String nulo = null;
+				nulo.equals("nada");
 			}
+			throw new ConfException(configuration.getMessage(), configuration.getCode(), configuration.getType());
 		}
 	}
 
