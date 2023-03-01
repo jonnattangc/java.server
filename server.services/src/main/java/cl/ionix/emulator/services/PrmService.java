@@ -32,11 +32,11 @@ public class PrmService implements IPrm {
 			String body = objectMapper.writeValueAsString(request);
 			String header = objectMapper.writeValueAsString(headerRx);
 
-			List<String> list = headerRx.get("requestid");
+			List<String> list = headerRx.get(UtilConst.REQUEST_ID);
 			String requestId = list != null && !list.isEmpty() ? list.get(0) : UtilConst.NO_INFO;
-			list = headerRx.get("client_id");
+			list = headerRx.get(UtilConst.CLIENT_ID);
 			String clientId = list != null && !list.isEmpty() ? list.get(0) : UtilConst.NO_INFO;
-			list = headerRx.get("access_token");
+			list = headerRx.get(UtilConst.ACCESS_TOKEN);
 			String accessToken = list != null && !list.isEmpty() ? list.get(0) : UtilConst.NO_INFO;
 
 			logger.info("requestid   : {}", requestId);

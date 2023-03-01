@@ -2,8 +2,8 @@ package cl.ionix.emulator.services;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
@@ -15,11 +15,12 @@ import cl.ionix.emulator.dto.EdrTokenLogonRequestDTO;
 import cl.ionix.emulator.dto.EdrTokenLogonResponseDTO;
 import cl.ionix.emulator.interfaces.ITrm;
 import cl.ionix.emulator.utils.EmulatorException;
+import cl.ionix.emulator.utils.UtilConst;
 
 @Service
 public class TrmService implements ITrm {
 
-	private final static Logger logger = Logger.getLogger(TrmService.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(TrmService.class);
 
 	@Autowired
 	ObjectMapper objectMapper;
@@ -33,18 +34,22 @@ public class TrmService implements ITrm {
 			String body = objectMapper.writeValueAsString(request);
 			String header = objectMapper.writeValueAsString(headerRx);
 			
-			String requestid = headerRx.get("requestid").get(0);
-			String client_id = headerRx.get("client_id").get(0);
-			String access_token = headerRx.get("access_token").get(0);
+			List<String> list = headerRx.get("requestid");
+			String requestId = list != null && !list.isEmpty() ? list.get(0) : UtilConst.NO_INFO;
+			list = headerRx.get("client_id");
+			String clientId = list != null && !list.isEmpty() ? list.get(0) : UtilConst.NO_INFO;
+			list = headerRx.get("access_token");
+			String accessToken = list != null && !list.isEmpty() ? list.get(0) : UtilConst.NO_INFO;
+
+			logger.info("requestid   : {}", requestId);
+			logger.info("client_id   : {}", clientId);
+			logger.info("access_token: {}", accessToken);
+
+			logger.info("Request Body  : {}", body);
+			logger.info("Request Header: {}", header);
 			
-			logger.info("requestid   : " + requestid);
-			logger.info("client_id   : " + client_id);
-			logger.info("access_token: " + access_token);
-			
-			logger.info("Request Body  : " + body);
-			logger.info("Request Header: " + header);
 		} catch (JsonProcessingException e) {
-			logger.severe("Error: " + e.getMessage());
+			logger.error("Error: ", e);
 			throw new EmulatorException(e.getMessage());
 		}
 
@@ -61,7 +66,7 @@ public class TrmService implements ITrm {
 		tsps.add(tsp);
 		
 		EdrTokenLogonResponseDTO.Enrollment enroll = new EdrTokenLogonResponseDTO.Enrollment();
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		list.add("PAN_16");
 		enroll.setParams( list );
 		

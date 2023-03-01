@@ -3,12 +3,14 @@ package cl.ionix.emulator.services;
 import java.net.URLDecoder;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
@@ -20,8 +22,8 @@ import cl.ionix.emulator.daos.IDaoCard;
 import cl.ionix.emulator.daos.IDaoDevice;
 import cl.ionix.emulator.dto.ActivatePaymentMethodResponseDTO;
 import cl.ionix.emulator.dto.CardInfo;
-import cl.ionix.emulator.dto.EdrTokenEnrollmentRequestDTO;
 import cl.ionix.emulator.dto.EdrTokenEnrollResponseDTO;
+import cl.ionix.emulator.dto.EdrTokenEnrollmentRequestDTO;
 import cl.ionix.emulator.dto.EdrTokenGetDigitalPanRequestDTO;
 import cl.ionix.emulator.dto.EdrTokenGetDigitalPanResponseDTO;
 import cl.ionix.emulator.dto.EdrTokenGetTokenResponseDTO;
@@ -31,11 +33,12 @@ import cl.ionix.emulator.dto.ints.IEmulator;
 import cl.ionix.emulator.interfaces.ICard;
 import cl.ionix.emulator.interfaces.IUtilities;
 import cl.ionix.emulator.utils.EmulatorException;
+import cl.ionix.emulator.utils.UtilConst;
 
 @Service
 public class CardService implements ICard {
 
-	private final static Logger logger = Logger.getLogger(CardService.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(CardService.class);
 
 	@Autowired
 	private IDaoCard cardRepository;
@@ -48,31 +51,37 @@ public class CardService implements ICard {
 
 	@Override
 	@Transactional
-	public EdrTokenGetDigitalPanResponseDTO cardSearch(EdrTokenGetDigitalPanRequestDTO request,
-			HttpHeaders headerRx) throws EmulatorException {
+	public EdrTokenGetDigitalPanResponseDTO cardSearch(EdrTokenGetDigitalPanRequestDTO request, HttpHeaders headerRx)
+			throws EmulatorException {
 		logger.info("Service de card Search");
 		EdrTokenGetDigitalPanResponseDTO response = new EdrTokenGetDigitalPanResponseDTO();
 		try {
 			String body = util.toJson(request);
 			String header = util.toJson(headerRx);
 
-			String requestid = headerRx.get("requestid").get(0);
-			String client_id = headerRx.get("client_id").get(0);
-			String access_token = headerRx.get("access_token").get(0);
+			List<String> list = headerRx.get(UtilConst.REQUEST_ID);
+			String requestId = list != null && !list.isEmpty() ? list.get(0) : UtilConst.NO_INFO;
+			list = headerRx.get(UtilConst.CLIENT_ID);
+			String clientId = list != null && !list.isEmpty() ? list.get(0) : UtilConst.NO_INFO;
+			list = headerRx.get(UtilConst.ACCESS_TOKEN);
+			String accessToken = list != null && !list.isEmpty() ? list.get(0) : UtilConst.NO_INFO;
 
-			logger.info("requestid   : " + requestid);
-			logger.info("client_id   : " + client_id);
-			logger.info("access_token: " + access_token);
-			logger.info("Request Body  : " + body);
-			logger.info("Request Header: " + header);
+			logger.info("requestid   : {}", requestId);
+			logger.info("client_id   : {}", clientId);
+			logger.info("access_token: {}", accessToken);
+
+			logger.info("Request Body  : {}", body);
+			logger.info("Request Header: {}", header);
 
 			Long rId = Long.parseLong(request.getRequestorInfo().getRid());
 			String dataCard = request.getCardInfo().getData().getProfile();
 			String cardNumber = "**** **** **** ****";
 			// Card Info es un json que trae el numero de tarjeta...
-			logger.info("CardInfo: " + util.decryptRSA(dataCard));
+			String msg = util.decryptRSA(dataCard);
+
+			logger.info("CardInfo: {}", msg);
 			Map<String, Object> map = util.toMap(util.decryptRSA(dataCard));
-			String tokenCard = util.getTokenCard(client_id);
+			String tokenCard = util.getTokenCard(clientId);
 			if (map != null) {
 				cardNumber = (String) map.get("fpan");
 				if (cardNumber != null)
@@ -81,7 +90,7 @@ public class CardService implements ICard {
 			// busca la tarjeta inscrita
 			Card card = cardRepository.findByCardNumber(cardNumber);
 			if (card == null) {
-				logger.info("No se encuentra tarjeta " + cardNumber + " en PSEUDO-APICET, se ingresa.");
+				logger.info("No se encuentra tarjeta {} en PSEUDO-APICET, se ingresa.", cardNumber);
 				// Para efecto de pruebas, la registramos a nombre del cliente y retornamos
 				// como si estuviera.
 				card = new Card();
@@ -90,17 +99,17 @@ public class CardService implements ICard {
 				card.setRequest(body);
 				card.setProfile(dataCard);
 				card.setCardNumber(cardNumber);
-				card.setClient(client_id);
+				card.setClient(clientId);
 				cardRepository.save(card);
 			}
-
-			logger.info("Tarjeta: " + cardNumber + " Token: " + card.getToken());
+			msg = String.format("Tarjeta: %s Token: %s", cardNumber, card.getToken());
+			logger.info("{}", msg);
 			CardInfo cardInfo = new CardInfo();
 			cardInfo.setReference(card.getToken());
 			response.setCardInfo(cardInfo);
 
 		} catch (Exception e) {
-			logger.severe("Error en servicio de busqueda: " + e.getMessage());
+			logger.error("Error en servicio de busqueda: ", e);
 			throw new EmulatorException(e.getMessage() != null ? e.getMessage() : "Error desconocido");
 		}
 		return response;
@@ -117,9 +126,10 @@ public class CardService implements ICard {
 			String auth = headerRx.get("Authorization").get(0);
 			auth = auth.replace("Bearer ", "");
 
-			String x_client_id = headerRx.get("X-Client-Id").get(0);
-			String x_client_secret = headerRx.get("X-Client-Secret").get(0);
+			String xClientId = headerRx.get(UtilConst.X_CLIENT_ID).get(0);
+			String xClientSecret = headerRx.get(UtilConst.X_CLIENT_SECRET).get(0);
 			String dataInUrl = request.getRequestURI().replace("/api/v1/foods/cards/", "");
+
 			if (dataInUrl.indexOf("actions") > 0) {
 				action = EActions.getAction(dataInUrl);
 				if (!action.equals(EActions.NONE))
@@ -127,9 +137,9 @@ public class CardService implements ICard {
 				dataInUrl = dataInUrl.trim();
 			}
 
-			logger.info("Original        : " + dataInUrl);
+			logger.info("Original        : {}", dataInUrl);
 			String token = URLDecoder.decode(dataInUrl, StandardCharsets.UTF_8.toString());
-			logger.info("Token           : " + token);
+			logger.info("Token           : {}", token);
 			String cardNumber = util.decryptAES(token);
 
 			int dato = -1;
@@ -145,14 +155,13 @@ public class CardService implements ICard {
 				bb.get(bytes);
 				body = new String(bytes);
 			}
-			bb = null;
 
-			logger.info("Request Body    : " + body);
-			logger.info("Request Header  : " + header);
-			logger.info("Card            : " + cardNumber);
-			logger.info("X-Client-Id     : " + x_client_id);
-			logger.info("X-Client-Secret : " + x_client_secret);
-			logger.info("Authorization   : " + auth);
+			logger.info("Request Body    : {}", body);
+			logger.info("Request Header  : {}", header);
+			logger.info("Card            : {}", cardNumber);
+			logger.info("X-Client-Id     : {}", xClientId);
+			logger.info("X-Client-Secret : {}", xClientSecret);
+			logger.info("Authorization   : {}", auth);
 
 			Card card = cardRepository.findByCardNumber(cardNumber);
 			String tokenCard = util.SHA256(cardNumber);
@@ -181,7 +190,7 @@ public class CardService implements ICard {
 				response = new ErrorData("23421", "No hay infomación");
 			}
 		} catch (Exception e) {
-			logger.severe("Error en servicio TNP: " + e.getMessage());
+			logger.error("Error en servicio TNP: ", e);
 			throw new EmulatorException(e.getMessage() != null ? e.getMessage() : "Error TNP");
 		}
 		return response;
@@ -244,25 +253,30 @@ public class CardService implements ICard {
 		logger.info("Service getToken");
 		EdrTokenGetTokenResponseDTO response = new EdrTokenGetTokenResponseDTO();
 		try {
-			String requestid = headerRx.get("requestid").get(0);
-			String client_id = headerRx.get("client_id").get(0);
-			String access_token = headerRx.get("access_token").get(0);
 
-			logger.info("requestid   : " + requestid);
-			logger.info("client_id   : " + client_id);
-			logger.info("access_token: " + access_token);
+			List<String> list = headerRx.get(UtilConst.REQUEST_ID);
+			String requestId = list != null && !list.isEmpty() ? list.get(0) : UtilConst.NO_INFO;
+			list = headerRx.get(UtilConst.CLIENT_ID);
+			String clientId = list != null && !list.isEmpty() ? list.get(0) : UtilConst.NO_INFO;
+			list = headerRx.get(UtilConst.ACCESS_TOKEN);
+			String accessToken = list != null && !list.isEmpty() ? list.get(0) : UtilConst.NO_INFO;
+
+			logger.info("requestid   : {}", requestId);
+			logger.info("client_id   : {}", clientId);
+			logger.info("access_token: {}", accessToken);
+
 			// el token es del device
 			Device device = deviceRepository.findByToken(token);
 			if (device != null) {
-				logger.info("Dispositivo encontrado encontrado: " + token);
+				logger.info("Dispositivo encontrado encontrado: {} ", token);
 				EdrTokenGetTokenResponseDTO.TokenInfo tokeninfo = new EdrTokenGetTokenResponseDTO.TokenInfo();
 				EdrTokenGetTokenResponseDTO.Profile profile = new EdrTokenGetTokenResponseDTO.Profile();
 				// con el card asociado al enrolamiento
 				Card card = cardRepository.findByToken(device.getCard());
 				if (card != null) {
-					String toCipher = "{\"dpan\":\""+ card.getCardNumber()+"\",\"cvv\":\"123\",\"dexp\":\"12/21\"}";
-					logger.info("DATA: " + toCipher);					
-					profile.setProfile( util.encryptRSA(toCipher) );
+					String toCipher = "{\"dpan\":\"" + card.getCardNumber() + "\",\"cvv\":\"123\",\"dexp\":\"12/21\"}";
+					logger.info("DATA: {}", toCipher);
+					profile.setProfile(util.encryptRSA(toCipher));
 					tokeninfo.setData(profile);
 					tokeninfo.setReference(device.getToken());
 					tokeninfo.setStatus("ACTIVE");
@@ -273,56 +287,63 @@ public class CardService implements ICard {
 				throw new EmulatorException("No existe tarjeta para token", "5001");
 
 		} catch (Exception e) {
-			logger.severe("Error: " + e.getMessage());
+			logger.error("Error: ", e);
 			throw new EmulatorException(e.getMessage() != null ? e.getMessage() : "Error desconocido");
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
-	public EdrTokenEnrollResponseDTO enrollDevice(EdrTokenEnrollmentRequestDTO request,
-			HttpHeaders headerRx) throws EmulatorException {
+	public EdrTokenEnrollResponseDTO enrollDevice(EdrTokenEnrollmentRequestDTO request, HttpHeaders headerRx)
+			throws EmulatorException {
 		logger.info("Service de enrolado de tarjetas");
 		EdrTokenEnrollResponseDTO response = new EdrTokenEnrollResponseDTO();
 		try {
 			String body = util.toJson(request);
 			String header = util.toJson(headerRx);
 
-			String requestid = headerRx.get("requestid").get(0);
-			String client_id = headerRx.get("client_id").get(0);
-			String access_token = headerRx.get("access_token").get(0);
+			List<String> list = headerRx.get(UtilConst.REQUEST_ID);
+			String requestId = list != null && !list.isEmpty() ? list.get(0) : UtilConst.NO_INFO;
+			list = headerRx.get(UtilConst.CLIENT_ID);
+			String clientId = list != null && !list.isEmpty() ? list.get(0) : UtilConst.NO_INFO;
+			list = headerRx.get(UtilConst.ACCESS_TOKEN);
+			String accessToken = list != null && !list.isEmpty() ? list.get(0) : UtilConst.NO_INFO;
 
-			logger.info("requestid   : " + requestid);
-			logger.info("client_id   : " + client_id);
-			logger.info("access_token: " + access_token);
+			logger.info("requestid   : {}", requestId);
+			logger.info("client_id   : {}", clientId);
+			logger.info("access_token: {}", accessToken);
 
-			logger.info("Request Body  : " + body);
-			logger.info("Request Header: " + header);
+			logger.info("Request Body  : {}", body);
+			logger.info("Request Header: {}", header);
 
 			String dataCard = request.getCardInfo().getData().getProfile();
 
 			String cardNumber = "**** **** **** ****";
-			logger.info("CardInfo: " + util.decryptRSA(dataCard));
+			String msg = util.decryptRSA(dataCard);
+			logger.info("CardInfo: {}", msg);
+
 			Map<String, Object> map = util.toMap(util.decryptRSA(dataCard));
-			
-			String tokenCard = util.getTokenCard(client_id);
+
+			String tokenCard = util.getTokenCard(clientId);
 			if (map != null) {
 				cardNumber = (String) map.get("fpan");
 				if (cardNumber != null)
 					tokenCard = util.getTokenCard(cardNumber);
 			}
-			logger.info("CARD: " + cardNumber + " TOKEN: " + tokenCard);
+			logger.info("CARD: {} TOKEN: {}", cardNumber, tokenCard);
+
 			if (cardNumber.equals("**** **** **** ****")) {
 				throw new EmulatorException("Tarjeta no existe, el metodo search dijo puras mentiras", "5000");
 			} else {
 				Card card = cardRepository.findByCardNumber(cardNumber);
 				if (card != null) {
-					logger.info("Los token de tarjetas son: " + (tokenCard.equals(card.getToken()) ? "IGUALES" : "DISTINTOS"));
+					logger.info("Los token de tarjetas son: {}",
+							(tokenCard.equals(card.getToken()) ? "IGUALES" : "DISTINTOS"));
 					if (card.getToken().equals(tokenCard)) {
 						Device device = deviceRepository.findByCard(card.getToken());
 						if (device != null) {
-							logger.info("Dispositivo ya existe, el token es: " + device.getToken());
+							logger.info("Dispositivo ya existe, el token es: {}", device.getToken());
 							EdrTokenEnrollResponseDTO.TokenInfo tokenInfo = new EdrTokenEnrollResponseDTO.TokenInfo();
 							tokenInfo.setHref("EMULATOR-REF");
 							tokenInfo.setReference(device.getToken());
@@ -334,10 +355,10 @@ public class CardService implements ICard {
 							cardInfo.setReference(device.getToken());
 							response.setCardInfo(cardInfo);
 							response.setReference(card.getToken());
-							
+
 						} else {
 							String tokenDevice = util.SHA256(body);
-							logger.info("Dispositivo nuevo, el token es: " + tokenDevice);
+							logger.info("Dispositivo nuevo, el token es: {}", tokenDevice);
 
 							device = new Device();
 							device.setRequest(body);
@@ -364,7 +385,7 @@ public class CardService implements ICard {
 			}
 
 		} catch (Exception e) {
-			logger.severe("Error: " + e.getMessage());
+			logger.error("Error: ", e);
 			throw new EmulatorException(e.getMessage());
 		}
 

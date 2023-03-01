@@ -12,5 +12,11 @@ public class UtilConst {
 	public static final String TEXT_TO_ENDPOINT = " para enpoint: ";
 	public static final String CXP_SUSB_KEY = "ocp-apim-subscription-key";
 	public static final String SAVE_INFO_TO = "Se guarda informacion de ";
+	public static final String X_CLIENT_ID = "X-Client-Id";
+	public static final String X_CLIENT_SECRET = "X-Client-Secret";
+	public static final String REQUEST_ID = "requestid";
+	public static final String CLIENT_ID = "client_id";
+	public static final String ACCESS_TOKEN = "access_token";
+	
 	public static final String LINE = "---------------------------------------------------------------------------------------";
 }
