@@ -118,8 +118,10 @@ public class CxpService implements ICxp {
 			String url = urls[enviroment.ordinal()] + uri;
 			String msg = String.format("Enviroment %s - Use ApiKey[%s]", enviroment, newKey);
 			logger.info("{}", msg);
-			msg = String.format("keys: %s", geokeys.toString() );
-			logger.info("{}", msg);
+			StringBuilder text = new StringBuilder("keys: ");
+			for( String skey : geokeys )
+				text.append(String.format("%s ", skey ));
+			logger.info("{}", text);
 			
 			msg = String.format("Endpoint Proxy: %s", url);
 			logger.info("{}", msg);
