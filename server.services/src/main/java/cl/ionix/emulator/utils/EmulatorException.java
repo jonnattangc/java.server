@@ -3,10 +3,11 @@ package cl.ionix.emulator.utils;
 public class EmulatorException extends Exception {
 
 	private static final long serialVersionUID = 1L;
-	private String code = "-1";
+	private final String code;
 
 	public EmulatorException(String msg) {
 		super(msg);
+		this.code = "-1";
 	}
 
 	public EmulatorException(String msg, String code) {

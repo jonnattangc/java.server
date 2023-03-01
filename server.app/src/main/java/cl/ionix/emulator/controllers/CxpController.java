@@ -30,7 +30,7 @@ import cl.ionix.emulator.utils.EmulatorException;
 @RestController
 @RequestMapping("/cxp")
 public class CxpController {
-	private final static Logger logger = Logger.getLogger(CxpController.class.getName());
+	private static final Logger logger = Logger.getLogger(CxpController.class.getName());
 	@Autowired
 	private ICxp cxpService;
 
@@ -50,7 +50,7 @@ public class CxpController {
 			((CxpResponseDTO)response).setData( null );
 		}
 
-		return new ResponseEntity<ICxpResponse>(response, status);
+		return new ResponseEntity<>(response, status);
 	}
 
 	@GetMapping(value = "/**")
@@ -64,6 +64,6 @@ public class CxpController {
 			status = HttpStatus.CONFLICT;
 			response = e.getMessage();
 		}
-		return new ResponseEntity<String>(response, status);
+		return new ResponseEntity<>(response, status);
 	}
 }

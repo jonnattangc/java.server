@@ -1,11 +1,16 @@
 package cl.ionix.emulator.services;
 
-import java.util.logging.Logger;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -14,17 +19,11 @@ import cl.ionix.emulator.daos.IDaoUser;
 import cl.ionix.emulator.interfaces.IEdr;
 import cl.ionix.emulator.interfaces.IUtilities;
 import cl.ionix.emulator.utils.EmulatorException;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.web.client.HttpStatusCodeException;
-import org.springframework.web.client.RestTemplate;
 
 @Service
 public class EdrService implements IEdr {
 
-	private final static Logger logger = Logger.getLogger(EdrService.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(EdrService.class);
 
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -52,9 +51,9 @@ public class EdrService implements IEdr {
 			String realm = headerRx.get("realm").get(0);
 			// inicio con un valor al azar
 			String accesstoken = util.SHA256(header);
-
-			logger.info("name : " + name + " pass: " + pass + " realm: " + realm);
-			logger.info("Request Header: " + header);
+			String msg = String.format("name: %s pass: %s realm: %s", name, pass, realm);
+			logger.info("{}", msg);
+			logger.info("Request Header: {}", header);
 
 			String textRealLogin = realLogin(name, pass, realm);
 
@@ -64,14 +63,14 @@ public class EdrService implements IEdr {
 			if (user != null) {
 				user.setAccessToken(accesstoken);
 				userRepository.save(user);
-				logger.info("#### User Id: " + user.getId() );
+				logger.info("#### User Id: {}", user.getId());
 			} else {
 				user = new User();
 				user.setNameUser(name);
 				user.setPassword(pass);
 				user.setRealm(realm);
 				user.setAccessToken(accesstoken);
-				logger.info("Se guarda...: " + name );
+				logger.info("Se guarda...: {}", name);
 				userRepository.save(user);
 			}
 
@@ -82,7 +81,7 @@ public class EdrService implements IEdr {
 			} else {
 				response = accesstoken;
 			}
-			logger.info("response: " + accesstoken);
+			logger.info("response: {}", accesstoken);
 		} catch (Exception e) {
 			throw new EmulatorException("No se puede logear user", "1223");
 		}
@@ -98,6 +97,7 @@ public class EdrService implements IEdr {
 	 * @return
 	 */
 	private String realLogin(final String name, final String pass, final String realm) {
+		String body = null;
 		try {
 			HttpHeaders httpHeaders = new HttpHeaders();
 			httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -110,27 +110,28 @@ public class EdrService implements IEdr {
 			String url = "https://certificacion.edenred.cl/EdenredPrivateWebPortal/sitefinity/Authenticate/SWT";
 			if (realm.contains("EdenredJunaebWebPortal"))
 				url = "https://certificacion.edenred.cl/EdenredJunaebWebPortal/Sitefinity/Authenticate/SWT";
-			
+
 			HttpEntity<?> request = new HttpEntity<>(httpHeaders);
-			logger.info("endpoint: " + url);
+			logger.info("endpoint: {} ", url);
 			HttpEntity<String> response = restTemplateWithTimeout.postForEntity(url, request, String.class);
-			logger.info("Response: " + util.toJson(response));
-			if (response.getBody() == null || !response.getBody().contains("wrap_access_token")) {
-				return null;
-			}
-			return response.getBody();
+			String msg = String.format("%s", util.toJson(response));
+			logger.info("Response: {}", msg);
+
+			body = response.getBody();
+			if (body == null || !body.contains("wrap_access_token"))
+				body = null;
+
 		} catch (NumberFormatException e) {
-			logger.severe(e.getMessage());
-			return null;
+			logger.error("Error", e);
+
 		} catch (HttpStatusCodeException hsce) {
-			logger.severe("Code[" + hsce.getStatusCode() + "]: " + hsce.getMessage());
-			if (hsce.getStatusCode() == HttpStatus.UNAUTHORIZED)
-				return null;
-			return null;
-		} catch (org.springframework.web.client.RestClientException e) {
-			logger.severe(e.getMessage());
-			return null;
+			logger.error("Error Http", hsce);
+
+		} catch (org.springframework.web.client.RestClientException restEx) {
+			logger.error("Error Http", restEx);
+
 		}
+		return body;
 	}
 
 }
