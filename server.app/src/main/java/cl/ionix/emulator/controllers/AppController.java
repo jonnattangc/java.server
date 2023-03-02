@@ -28,7 +28,7 @@ import cl.ionix.emulator.utils.UtilConst;
  * 
  */
 @RestController
-@RequestMapping("/emulator/config")
+@RequestMapping("/config")
 public class AppController {
 
 	private static final Logger logger = LoggerFactory.getLogger(AppController.class);
