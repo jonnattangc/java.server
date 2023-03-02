@@ -115,10 +115,6 @@ public class AppConfigService implements IConfigurations {
 			logger.info("Se reporta Tipo error: {}", configuration.getType());
 			logger.info("*************************************************************** ");
 			// se provoca el internal error para quien consume el servicio
-			if (configuration.getType().equals(TypeResponse.HTTP_RESPONSE_500)) {
-				String nulo = null;
-				nulo.equals("nada");
-			}
 			throw new ConfException(configuration.getMessage(), configuration.getCode(), configuration.getType());
 		}
 	}

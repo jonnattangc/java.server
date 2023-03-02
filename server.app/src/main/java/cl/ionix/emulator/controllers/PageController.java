@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,7 +49,7 @@ public class PageController {
 
 	@PostMapping(path = "/users/save", consumes = { MediaType.APPLICATION_FORM_URLENCODED_VALUE }, produces = {
 			MediaType.TEXT_HTML_VALUE })
-	@CrossOrigin(origins = "*")
+
 	public ResponseEntity<IEmulator> save(@Valid @RequestParam MultiValueMap<String, String> params,
 			HttpServletRequest request, @RequestHeader HttpHeaders headers) {
 		logger.info("---------------------------------------------------------------------------------------");
@@ -75,7 +74,6 @@ public class PageController {
 	}
 
 	@GetMapping(path = "/users")
-	@CrossOrigin(origins = "*")
 	public ResponseEntity<IEmulator> getUsers(HttpServletRequest request, @RequestHeader HttpHeaders headers) {
 		HttpStatus status = HttpStatus.OK;
 		IEmulator response = null;

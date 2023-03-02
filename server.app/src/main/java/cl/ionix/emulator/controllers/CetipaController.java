@@ -92,7 +92,7 @@ public class CetipaController {
 			((ErrorData) response).setCode(e.getCode());
 			((ErrorData) response).setMessage(e.getMessage());
 		}
-		return new ResponseEntity<IEmulator>(response, headersTx, status);
+		return new ResponseEntity<>(response, headersTx, status);
 	}
 
 	@PostMapping(value = "/pay/ptm/v1/voids")
@@ -120,7 +120,7 @@ public class CetipaController {
 			((ErrorData) response).setMessage(e.getMessage());
 		}
 
-		return new ResponseEntity<IEmulator>(response, headersTx, status);
+		return new ResponseEntity<>(response, headersTx, status);
 	}
 
 	/**

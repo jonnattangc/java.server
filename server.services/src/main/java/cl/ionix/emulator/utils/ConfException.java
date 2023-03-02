@@ -42,7 +42,7 @@ public class ConfException extends Exception {
 	}
 
 	public HttpStatus getStatus() {
-		HttpStatus status = HttpStatus.OK;
+		HttpStatus status = null;
 		switch (type) {
 		case HTTP_RESPONSE_200:
 			status = HttpStatus.OK;
