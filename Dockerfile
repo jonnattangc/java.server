@@ -1,4 +1,4 @@
-FROM maven:3.8.4-jdk-11 as compilador
+FROM maven as compilador
 
 RUN echo "Se crea carpeta de servidor" && \
     mkdir app
@@ -32,9 +32,9 @@ WORKDIR /app
 USER jonnattan
 
 ENV PORT 8089
-ENV CONTEXT /mobile
+ENV CONTEXT /emulator
 ENV LOG_LEVEL debug
-ENV BD_ADDR 192.168.0.15
+ENV BD_ADDR dev.jonnattan.com
 ENV BD_PORT 3306
 ENV BD_NAME emulator
 ENV BD_USER emulator
