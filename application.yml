@@ -36,6 +36,11 @@ http:
     connect: 90
     read: 90
 
+app:
+  secure:
+    aes:
+      key: 0112f48125034f8fa42aef2441773793
+
 cxp:
   select: 2
   urls: https://testservices.wschilexpress.com,

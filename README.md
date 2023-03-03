@@ -1,7 +1,10 @@
-# Emulador de algunas cosas interesant
+# Emulador de algunas cosas interesantes
 
 Emula el comportamiento de algunas aplicaciones que me siven para el desarrollo mobile 
 Ideal para hacer pruebas en desarrollo, se utilizara este servidor con mi pagina de prueba 
+
+##
+Utiliza Spring boot durante el desarrollo
 
 ##
 Está programado en JAVA con Spring boot y una conexión a base de datos MySQL
