@@ -1,21 +1,21 @@
 version: "3.3"
 services:
-  atlantico-service:
-    image: atlantico-server:v1
-    container_name: atlantico-server
+  java-service:
+    image: java-server:v1
+    container_name: java-server
     restart: always
     deploy:
       replicas: 1
     environment:
       PORT: 8089
-      CONTEXT: /mobile
-      BD_ADDR: 192.168.0.15
-      BD_ADDR: 192.168.0.15
+      CONTEXT: /emulator
+      BD_ADDR: dev.jonnattan.com
       BD_PORT: 3306
       BD_NAME: emulator
       BD_USER: emulator
       BD_PASS: emulator
       LOG_LEVEL: info
+      AES_KEY: mAFaa23csdas5sdf12sght549u87y8adnjk
     volumes:
       - $PWD/application.yml:/app/application.yml
     networks:
