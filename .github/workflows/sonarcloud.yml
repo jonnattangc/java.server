@@ -41,7 +41,6 @@ permissions:
 jobs:
   Analysis:
     runs-on: ubuntu-latest
-
     steps:
       - name: Analyze with SonarCloud
 
@@ -52,7 +51,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information
           SONAR_TOKEN: caad737bd7532fbbd2c49418e6523c82b11c637c # ${{ secrets.SONAR_TOKEN }}   # Generate a token on Sonarcloud.io, add it to the secrets of this repo with the name SONAR_TOKEN (Settings > Secrets > Actions > add new repository secret)
         with:
-          # Additional arguments for the sonarcloud scanner
           args:
             # Unique keys of your project and organization. You can find them in SonarCloud > Information (bottom-left menu)
             # mandatory
@@ -65,4 +63,4 @@ jobs:
             # Comma-separated paths to directories containing test source files.
             #-Dsonar.tests= # optional. For more info about Code Coverage, please refer to https://docs.sonarcloud.io/enriching/test-coverage/overview/
             # Adds more detail to both client and server-side analysis logs, activating DEBUG mode for the scanner, and adding client-side environment variables and system properties to the server-side log of analysis report processing.
-            -Dsonar.verbose=true # optional, default is false
+            #-Dsonar.verbose=true # optional, default is false
