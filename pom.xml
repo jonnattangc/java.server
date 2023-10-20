@@ -20,7 +20,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
 		<test.version>1.2.0-SNAPSHOT</test.version>
-		<spring.boot.version>2.7.16</spring.boot.version>
+		<spring.boot.version>3.1.5</spring.boot.version>
 		<spring.data.commons.version>2.1.10.RELEASE</spring.data.commons.version>
 
 		<junit.version>4.13.1</junit.version>
