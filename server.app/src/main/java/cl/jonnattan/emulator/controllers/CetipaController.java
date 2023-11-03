@@ -3,7 +3,6 @@ package cl.jonnattan.emulator.controllers;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -33,6 +32,7 @@ import cl.jonnattan.emulator.interfaces.ITransactions;
 import cl.jonnattan.emulator.interfaces.ITrm;
 import cl.jonnattan.emulator.utils.ConfException;
 import cl.jonnattan.emulator.utils.EmulatorException;
+import jakarta.validation.Valid;
 
 /**
  * Controlles principal de emulador
@@ -45,7 +45,7 @@ import cl.jonnattan.emulator.utils.EmulatorException;
 @RestController
 @RequestMapping("/")
 public class CetipaController {
-	private final static Logger logger = Logger.getLogger(CetipaController.class.getName());
+	private static final Logger logger = Logger.getLogger(CetipaController.class.getName());
 
 	@Autowired
 	private ITransactions transactionService;

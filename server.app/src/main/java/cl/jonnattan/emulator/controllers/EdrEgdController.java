@@ -2,7 +2,6 @@ package cl.jonnattan.emulator.controllers;
 
 import java.util.logging.Logger;
 
-import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -18,6 +17,7 @@ import cl.jonnattan.emulator.interfaces.ICard;
 import cl.jonnattan.emulator.interfaces.IConfigurations;
 import cl.jonnattan.emulator.utils.ConfException;
 import cl.jonnattan.emulator.utils.EmulatorException;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Controlles principal de emulador
@@ -30,7 +30,7 @@ import cl.jonnattan.emulator.utils.EmulatorException;
 @RestController
 @RequestMapping("/")
 public class EdrEgdController {
-	private final static Logger logger = Logger.getLogger(EdrEgdController.class.getName());
+	private static final Logger logger = Logger.getLogger(EdrEgdController.class.getName());
 
 	@Autowired
 	private ICard cardService;

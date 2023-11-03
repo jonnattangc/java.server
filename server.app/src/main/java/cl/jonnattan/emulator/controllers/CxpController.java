@@ -2,8 +2,6 @@ package cl.jonnattan.emulator.controllers;
 
 import java.util.logging.Logger;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,6 +16,7 @@ import cl.jonnattan.emulator.dto.cxp.CxpResponseDTO;
 import cl.jonnattan.emulator.dto.cxp.ICxpResponse;
 import cl.jonnattan.emulator.interfaces.ICxp;
 import cl.jonnattan.emulator.utils.EmulatorException;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Controlles de conf de emulador

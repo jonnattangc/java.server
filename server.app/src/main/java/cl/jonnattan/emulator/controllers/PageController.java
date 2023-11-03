@@ -1,7 +1,5 @@
 package cl.jonnattan.emulator.controllers;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +25,8 @@ import cl.jonnattan.emulator.interfaces.IConfigurations;
 import cl.jonnattan.emulator.interfaces.IPage;
 import cl.jonnattan.emulator.utils.ConfException;
 import cl.jonnattan.emulator.utils.EmulatorException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 
 /**
  * Controller para solicitudes desde la web personal

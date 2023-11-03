@@ -6,9 +6,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +31,8 @@ import cl.jonnattan.emulator.interfaces.ICard;
 import cl.jonnattan.emulator.interfaces.IUtilities;
 import cl.jonnattan.emulator.utils.EmulatorException;
 import cl.jonnattan.emulator.utils.UtilConst;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class CardService implements ICard {
