@@ -16,8 +16,6 @@ services:
       BD_PASS: emulator
       LOG_LEVEL: info
       AES_KEY: mAFaa23csdas5sdf12sght549u87y8adnjk
-    volumes:
-      - $PWD/application.yml:/app/application.yml
     networks:
        - db-net
     ports:
