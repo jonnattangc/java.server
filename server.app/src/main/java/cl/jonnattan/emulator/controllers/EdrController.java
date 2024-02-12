@@ -29,7 +29,7 @@ import cl.jonnattan.emulator.utils.EmulatorException;
 @RestController
 @RequestMapping("/edr")
 public class EdrController {
-	private final static Logger logger = Logger.getLogger(EdrController.class.getName());
+	private static final Logger logger = Logger.getLogger(EdrController.class.getName());
 
 	@Autowired
 	private IEdr edrService;
@@ -41,7 +41,7 @@ public class EdrController {
 	public ResponseEntity<String> handleNonBrowserSubmissions(@RequestHeader MultiValueMap<String, String> headersRx) {
 		logger.info("****************************/login/ticket****************************");
 		logger.info("REALM: " + headersRx.get("realm"));
-		return new ResponseEntity<String>("Thank you for submitting feedback", HttpStatus.OK);
+		return new ResponseEntity<>("Thank you for submitting feedback", HttpStatus.OK);
 	}
 
 	@PostMapping(value = "/login/ticket", consumes = { MediaType.APPLICATION_FORM_URLENCODED_VALUE })
@@ -61,7 +61,7 @@ public class EdrController {
 			status = e.getStatus();
 			response = e.getMessage();
 		}
-		return new ResponseEntity<String>(response, headersTx, status);
+		return new ResponseEntity<>(response, headersTx, status);
 	}
 
 	@PostMapping(value = "/login/beanuj", consumes = { MediaType.APPLICATION_FORM_URLENCODED_VALUE }, produces = { MediaType.APPLICATION_FORM_URLENCODED_VALUE })
@@ -81,7 +81,7 @@ public class EdrController {
 			status = e.getStatus();
 			response = e.getMessage();
 		}
-		return new ResponseEntity<String>(response, headersTx, status);
+		return new ResponseEntity<>(response, headersTx, status);
 	}
 
 }

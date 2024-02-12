@@ -1,12 +1,16 @@
 spring:
   application:    
     name: Emulador 
-  profiles: "default"
   datasource:
-    url: jdbc:mysql://dev.jonnattan.com/emulator?autoReconnect=true&useSSL=false&useTimezone=true&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: emulator
-    password: emulator
+    url: jdbc:mysql://${BD_ADDR}:${BD_PORT}/${BD_NAME}?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true&autoReconnect=true
+    username: ${BD_USER}
+    password: ${BD_PASS}
     driverClassName: com.mysql.jdbc.Driver
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 10
+      minimum-idle: 1
+      idle-timeout: 10000
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect
     show-sql: false
@@ -21,15 +25,15 @@ spring:
     
 server:
   address: 0.0.0.0
-  port: 8089
+  port: ${PORT}
   servlet:
-    context-path: /emulator
+    context-path: ${CONTEXT}
   
 logging:
   level:
     org:
       hibernate:
-        SQL: info
+        SQL: ${LOG_LEVEL}
     
 http:
   timeout:
@@ -39,7 +43,7 @@ http:
 app:
   secure:
     aes:
-      key: 0112f48125034f8fa42aef2441773793
+      key: ${AES_KEY}
     
 cxp:
   select: 2
