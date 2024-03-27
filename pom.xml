@@ -14,11 +14,11 @@
 		<url/>
 	</organization>
 	<properties>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>11</maven.compiler.source>
+		<maven.compiler.target>11</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.version>1.8</java.version>
+		<java.version>11</java.version>
 		<test.version>1.2.0-SNAPSHOT</test.version>
 		<spring.boot.version>3.1.5</spring.boot.version>
 		<spring.data.commons.version>2.1.10.RELEASE</spring.data.commons.version>
@@ -92,7 +92,6 @@
 			<dependency>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.1</version>
 			</dependency>
 			<dependency>
 				<groupId>cl.jonnattan.test</groupId>
@@ -111,7 +110,7 @@
 			</dependency>
 			<dependency>
 				<groupId>cl.jonnattan.test</groupId>
-				<artifactId>server.dto</artifactId>
+				<artifactId>server.json</artifactId>
 				<version>${test.version}</version>
 			</dependency>
 		</dependencies>
@@ -130,12 +129,5 @@
 				<filtering>true</filtering>
 			</testResource>
 		</testResources>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>2.1.8.RELEASE</version>
-			</plugin>
-		</plugins>
 	</build>
 </project>

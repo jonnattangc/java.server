@@ -99,7 +99,7 @@ public class CardService implements ICard {
 				card.setClient(clientId);
 				cardRepository.save(card);
 			}
-			msg = String.format("Tarjeta: %s Token: %s", cardNumber, card.getToken());
+			msg = String.format("Tarjeta: %s Token: %s",cardNumber, card.getToken());
 			logger.info("{}", msg);
 			CardInfo cardInfo = new CardInfo();
 			cardInfo.setReference(card.getToken());

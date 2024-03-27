@@ -116,14 +116,14 @@ public class CxpService implements ICxp {
 			HttpEntity<String> requestTx = new HttpEntity<>(body, headersTx);
 
 			String url = urls[enviroment.ordinal()] + uri;
-			String msg = String.format("Enviroment %s - Use ApiKey[%s]", enviroment, newKey);
+			String msg = String.format("Enviroment %s - Use ApiKey[%s]",enviroment, newKey);
 			logger.info("{}", msg);
 			StringBuilder text = new StringBuilder("keys: ");
 			for (String skey : geokeys)
-				text.append(String.format("%s ", skey));
+				text.append(String.format("%s ",skey));
 			logger.info("{}", text);
 
-			msg = String.format("Endpoint Proxy: %s", url);
+			msg = String.format("Endpoint Proxy: %s",url);
 			logger.info("{}", msg);
 
 			long init = System.currentTimeMillis();
@@ -173,9 +173,9 @@ public class CxpService implements ICxp {
 		body = body.replace("\t", "");
 
 		logger.info("Request URI: {}", request.getRequestURI());
-		String msg = String.format("Request Header Rx: %s", util.toJson(header));
+		String msg = String.format("Request Header Rx: %s",util.toJson(header));
 		logger.info("{}", msg);
-		msg = String.format("Request Body Rx  : %s", body);
+		msg = String.format("Request Body Rx  : %s",body);
 		logger.info("{}", msg);
 
 		return body;
@@ -191,16 +191,16 @@ public class CxpService implements ICxp {
 		try {
 
 			if (uri.contains("/dev") || uri.contains("/develop")) {
-				response = String.format("Enviroment change from %s to Develop", enviroment.name());
+				response = String.format("Enviroment change from %s to Develop",enviroment.name());
 				enviroment = Enviroments.DEVELOP;
 			} else if (uri.contains("/qa") || uri.contains("/quality") || uri.contains("/staging")) {
-				response = String.format("Enviroment change from %s to Staging", enviroment.name());
+				response = String.format("Enviroment change from %s to Staging",enviroment.name());
 				enviroment = Enviroments.STAGING;
 			} else if (uri.contains("/prod") && uri.contains("/production")) {
-				response = String.format("Enviroment change from %s to Production", enviroment.name());
+				response = String.format("Enviroment change from %s to Production",enviroment.name());
 				enviroment = Enviroments.PRODUCTION;
 			} else {
-				response = String.format("Enviroment not change. Actually is %s", enviroment.name());
+				response = String.format("Enviroment not change. Actually is %s",enviroment.name());
 				throw new EmulatorException(response);
 			}
 		} catch (Exception e) {

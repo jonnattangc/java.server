@@ -81,9 +81,9 @@ public class TransactionService implements ITransactions {
 			logger.info("Card: {}", cardNumber);
 
 			String idJson = util.toJson(request.getTransaction());
-			String authId = String.format("%d", util.cksumSHA256(idJson));
+			String authId = String.format("%d",util.cksumSHA256(idJson));
 			String amount = request.getTransaction().getAmount();
-			msg = String.format("Realiza transacción por $%s a la tarjeta: %s", amount, cardNumber);
+			msg = String.format("Realiza transacción por $%s a la tarjeta: %s",amount, cardNumber);
 			logger.info("{}", msg);
 			Transaction transaction = new Transaction();
 			transaction.setJsonId(idJson);
@@ -159,7 +159,7 @@ public class TransactionService implements ITransactions {
 					if (card != null) {
 						Long value = card.getAmount();
 						value += Long.parseLong(transaction.getAmount());
-						trans.setAvailablebalance(String.format("%.1f", (double) value));
+						trans.setAvailablebalance(String.format("%.1f",(double) value));
 						cardRepository.saveAmountById(value, card.getId(), new Date());
 					}
 				} else
