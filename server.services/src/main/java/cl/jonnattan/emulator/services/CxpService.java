@@ -4,10 +4,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +20,18 @@ import cl.jonnattan.emulator.interfaces.ICxp;
 import cl.jonnattan.emulator.interfaces.IUtilities;
 import cl.jonnattan.emulator.utils.EmulatorException;
 import cl.jonnattan.emulator.utils.UtilConst;
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class CxpService implements ICxp {
 
 	private static final Logger logger = LoggerFactory.getLogger(CxpService.class);
 
-	private enum Enviroments { STAGING, DEVELOP, PRODUCTION }
+	private enum Enviroments {
+		STAGING, DEVELOP, PRODUCTION
+	}
 
 	@Autowired
 	private RestTemplate restTemplateWithTimeout;
@@ -83,7 +84,6 @@ public class CxpService implements ICxp {
 		keysCotizacion = keysCotizacion.replace("\n", "");
 		cotkeys = keysCotizacion.split(",");
 
-		
 	}
 
 	@Override
@@ -95,11 +95,11 @@ public class CxpService implements ICxp {
 			String body = printHeaderAndPayload(request, header);
 			String uri = request.getRequestURI();
 			uri = uri.replace("/cxp", "");
-			List<String> list = header.get(UtilConst.CXP_SUSB_KEY); 
+			List<String> list = header.get(UtilConst.CXP_SUSB_KEY);
 			String key = list != null && !list.isEmpty() ? list.get(0) : "";
 			String newKey = key;
 			HttpHeaders headersTx = new HttpHeaders();
-			headersTx.setContentType(MediaType.APPLICATION_JSON_UTF8);
+			headersTx.setContentType(MediaType.APPLICATION_JSON);
 
 			if (uri.contains("/rating/api/v1.0/rates/courier")) {
 				newKey = cotkeys[enviroment.ordinal()];
@@ -116,24 +116,24 @@ public class CxpService implements ICxp {
 			HttpEntity<String> requestTx = new HttpEntity<>(body, headersTx);
 
 			String url = urls[enviroment.ordinal()] + uri;
-			String msg = String.format("Enviroment %s - Use ApiKey[%s]", enviroment, newKey);
+			String msg = String.format("Enviroment %s - Use ApiKey[%s]",enviroment, newKey);
 			logger.info("{}", msg);
 			StringBuilder text = new StringBuilder("keys: ");
-			for( String skey : geokeys )
-				text.append(String.format("%s ", skey ));
+			for (String skey : geokeys)
+				text.append(String.format("%s ",skey));
 			logger.info("{}", text);
-			
-			msg = String.format("Endpoint Proxy: %s", url);
+
+			msg = String.format("Endpoint Proxy: %s",url);
 			logger.info("{}", msg);
 
 			long init = System.currentTimeMillis();
 			HttpEntity<CxpResponseDTO> res = restTemplateWithTimeout.postForEntity(url, requestTx,
 					CxpResponseDTO.class);
 			long diff = ((System.currentTimeMillis() - init) / 1000L);
-			
+
 			msg = String.format("Response %d seg from CXP: %s ", diff, util.toJson(res));
 			logger.info("{}", msg);
-			
+
 			response = res.getBody();
 
 		} catch (Exception e) {
@@ -171,11 +171,11 @@ public class CxpService implements ICxp {
 		body = body.replace(" ", "");
 		body = body.replace("\n", "");
 		body = body.replace("\t", "");
-		
+
 		logger.info("Request URI: {}", request.getRequestURI());
-		String msg = String.format("Request Header Rx: %s", util.toJson(header));
+		String msg = String.format("Request Header Rx: %s",util.toJson(header));
 		logger.info("{}", msg);
-		msg = String.format("Request Body Rx  : %s", body);
+		msg = String.format("Request Body Rx  : %s",body);
 		logger.info("{}", msg);
 
 		return body;
@@ -191,16 +191,16 @@ public class CxpService implements ICxp {
 		try {
 
 			if (uri.contains("/dev") || uri.contains("/develop")) {
-				response = String.format("Enviroment change from %s to Develop", enviroment.name());
+				response = String.format("Enviroment change from %s to Develop",enviroment.name());
 				enviroment = Enviroments.DEVELOP;
 			} else if (uri.contains("/qa") || uri.contains("/quality") || uri.contains("/staging")) {
-				response = String.format("Enviroment change from %s to Staging", enviroment.name());
+				response = String.format("Enviroment change from %s to Staging",enviroment.name());
 				enviroment = Enviroments.STAGING;
 			} else if (uri.contains("/prod") && uri.contains("/production")) {
-				response = String.format("Enviroment change from %s to Production", enviroment.name());
+				response = String.format("Enviroment change from %s to Production",enviroment.name());
 				enviroment = Enviroments.PRODUCTION;
 			} else {
-				response = String.format("Enviroment not change. Actually is %s", enviroment.name());
+				response = String.format("Enviroment not change. Actually is %s",enviroment.name());
 				throw new EmulatorException(response);
 			}
 		} catch (Exception e) {

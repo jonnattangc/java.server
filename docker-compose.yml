@@ -9,15 +9,13 @@ services:
     environment:
       PORT: 8089
       CONTEXT: /emulator
-      BD_ADDR: dev.jonnattan.com
+      BD_ADDR: api.jonnattan.cl
       BD_PORT: 3306
       BD_NAME: emulator
       BD_USER: emulator
       BD_PASS: emulator
       LOG_LEVEL: info
       AES_KEY: mAFaa23csdas5sdf12sght549u87y8adnjk
-    volumes:
-      - $PWD/application.yml:/app/application.yml
     networks:
        - db-net
     ports:

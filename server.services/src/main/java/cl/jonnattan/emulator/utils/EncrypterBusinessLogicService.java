@@ -1,10 +1,12 @@
 package cl.jonnattan.emulator.utils;
 
 
-import javax.annotation.PostConstruct;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.stereotype.Component;
+
+import jakarta.annotation.PostConstruct;
+
 import org.bouncycastle.util.encoders.Base64;
 
 import org.bouncycastle.cms.CMSAlgorithm;

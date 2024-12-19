@@ -1,6 +1,5 @@
 package cl.jonnattan.emulator.controllers;
 
-import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +15,8 @@ import cl.jonnattan.emulator.dto.AppConfigurationRequestDTO;
 import cl.jonnattan.emulator.interfaces.IConfigurations;
 import cl.jonnattan.emulator.utils.ConfException;
 import cl.jonnattan.emulator.utils.UtilConst;
+import jakarta.validation.Valid;
+
 
 /**
  * Controller de configuraci'on de emulador

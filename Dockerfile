@@ -21,9 +21,6 @@ RUN useradd jonnattan && \
 
 COPY --from=compilador /app/servidor.jar /app/servidor.jar
 
-COPY application.yml /app/application.yml
-# COPY run.sh /app/run.sh
-
 RUN chown -R jonnattan:jonnattan /app && \
     chmod -R 755 /app
 
@@ -34,7 +31,7 @@ USER jonnattan
 ENV PORT 8089
 ENV CONTEXT /emulator
 ENV LOG_LEVEL debug
-ENV BD_ADDR dev.jonnattan.com
+ENV BD_ADDR api.jonnattan.cl
 ENV BD_PORT 3306
 ENV BD_NAME emulator
 ENV BD_USER emulator
