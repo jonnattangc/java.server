@@ -22,7 +22,6 @@
 		<test.version>1.2.0-SNAPSHOT</test.version>
 		<spring.boot.version>3.1.7</spring.boot.version>
 		<spring.data.commons.version>2.1.10.RELEASE</spring.data.commons.version>
-
 		<junit.version>4.13.1</junit.version>
 		<javax.json-api.version>1.1.4</javax.json-api.version>
 		<hibernate-types-52.version>2.6.1</hibernate-types-52.version>
