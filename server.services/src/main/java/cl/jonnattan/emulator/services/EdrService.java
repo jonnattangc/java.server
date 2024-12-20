@@ -76,8 +76,7 @@ public class EdrService implements IEdr {
 
 			if (textRealLogin == null) {
 				long ms = System.currentTimeMillis() + (24L * 3600L * 1000L);
-				response = String.format("wrap_access_token=%s&wrap_access_token_expires_in=%d", accesstoken,
-						(ms / 1000));
+				response = String.format("wrap_access_token=%s&wrap_access_token_expires_in=%d", accesstoken,(ms / 1000));
 			} else {
 				response = accesstoken;
 			}
@@ -114,7 +113,7 @@ public class EdrService implements IEdr {
 			HttpEntity<?> request = new HttpEntity<>(httpHeaders);
 			logger.info("endpoint: {} ", url);
 			HttpEntity<String> response = restTemplateWithTimeout.postForEntity(url, request, String.class);
-			String msg = String.format("%s", util.toJson(response));
+			String msg = String.format("%s",util.toJson(response));
 			logger.info("Response: {}", msg);
 
 			body = response.getBody();

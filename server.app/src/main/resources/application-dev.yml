@@ -1,0 +1,61 @@
+spring:
+  application:    
+    name: Emulador 
+  datasource:
+    url: jdbc:mysql://${BD_ADDR}:${BD_PORT}/${BD_NAME}?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true&autoReconnect=true
+    username: ${BD_USER}
+    password: ${BD_PASS}
+    driverClassName: com.mysql.cj.jdbc.Driver
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 10
+      minimum-idle: 1
+      idle-timeout: 10000
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: update # crea y borra las tablas sin persistencia (validate | update | create | create-drop )
+      # validate: validate the schema, makes no changes to the database.
+      # update: update the schema.
+      # create: creates the schema, destroying previous data.
+      # create-drop: drop the schema when the SessionFactory is closed explicitly, typically when the application is stopped.
+  jackson:
+    date-format: "yyyy-MM-dd'T'HH:mm:ss" 
+    
+server:
+  address: 0.0.0.0
+  port: ${PORT}
+  servlet:
+    context-path: ${CONTEXT}
+  
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: ${LOG_LEVEL}
+    
+http:
+  timeout:
+    connect: 90
+    read: 90
+    
+app:
+  secure:
+    aes:
+      key: ${AES_KEY}
+    
+cxp:
+  select: 2
+  urls: https://testservices.wschilexpress.com,
+        https://devservices.wschilexpress.com,
+        https://services.wschilexpress.com
+  otkeys: 0112f48125034f8fa42aef2441773793,
+          197dbfbbb2d94bfeaf7f3407db2648b5,
+          0112f48125034f8fa42aef2441773793
+  geokeys: 134b01b545bc4fb29a994cddedca9379,
+           5da357410f6f41e0a76482b11a55a00d,
+           134b01b545bc4fb29a994cddedca9379
+  cotkeys: fd46aa18a9fe44c6b49626692605a2e8,
+           3b9aa719ea36461f8c732df3774998f3,
+           fd46aa18a9fe44c6b49626692605a2e8
+
