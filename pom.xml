@@ -14,11 +14,11 @@
 		<url/>
 	</organization>
 	<properties>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.version>1.8</java.version>
+		<java.version>17</java.version>
 		<test.version>1.2.0-SNAPSHOT</test.version>
 		<spring.boot.version>3.2.11</spring.boot.version>
 		<spring.data.commons.version>2.1.10.RELEASE</spring.data.commons.version>
@@ -117,10 +117,10 @@
 	</dependencyManagement>
 	<modules>
 		<module>server.app</module>
+		<module>server.dao</module>
 		<module>server.domain</module>
 		<module>server.json</module>
 		<module>server.services</module>
-		<module>server.dao</module>
 	</modules>	
 	<build>
 		<testResources>
