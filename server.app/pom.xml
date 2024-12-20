@@ -79,8 +79,8 @@
 					<executable>true</executable>
 					<layout>JAR</layout>
 					<includeSystemScope>true</includeSystemScope>
-					<source>1.8</source>
-					<target>1.8</target>
+					<source>17</source>
+					<target>17</target>
 					<encoding>UTF-8</encoding>
 					<debug>true</debug>
 					<debuglevel>lines,vars,source</debuglevel>
