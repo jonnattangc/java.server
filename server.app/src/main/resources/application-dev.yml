@@ -11,17 +11,26 @@ spring:
       maximum-pool-size: 10
       minimum-idle: 1
       idle-timeout: 10000
+
   jpa:
-    show-sql: false
+    show-sql: true
     hibernate:
       ddl-auto: update # crea y borra las tablas sin persistencia (validate | update | create | create-drop )
       # validate: validate the schema, makes no changes to the database.
       # update: update the schema.
       # create: creates the schema, destroying previous data.
       # create-drop: drop the schema when the SessionFactory is closed explicitly, typically when the application is stopped.
+    naming:
+      physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+    properties:
+      hibernate:
+        globally_quoted_identifiers: true
+
   jackson:
     date-format: "yyyy-MM-dd'T'HH:mm:ss" 
-    
+    serialization:
+      WRITE_DATES_WITH_ZONE_ID: true
+
 server:
   address: 0.0.0.0
   port: ${PORT}
@@ -33,6 +42,7 @@ logging:
     org:
       hibernate:
         SQL: ${LOG_LEVEL}
+  cl.jonnattan: ${LOG_LEVEL}
     
 http:
   timeout:
