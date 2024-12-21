@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import cl.jonnattan.emulator.Transaction;
 import cl.jonnattan.emulator.enums.TransactionStatus;
@@ -18,6 +19,7 @@ import cl.jonnattan.emulator.enums.TransactionStatus;
  * @version 1.0 del 22-06-2020
  * 
  */
+@Repository
 public interface IDaoTransaction extends CrudRepository<Transaction, Long> {
 
 	public Transaction findByAuthorizationId(String authorizationId);
