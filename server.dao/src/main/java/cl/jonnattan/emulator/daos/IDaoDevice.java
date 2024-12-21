@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import cl.jonnattan.emulator.Device;
 
@@ -17,6 +18,7 @@ import cl.jonnattan.emulator.Device;
  * @version 1.0 del 22-06-2020
  * 
  */
+@Repository
 public interface IDaoDevice extends CrudRepository<Device, Long> {
 	public Device findByToken(String token);
 

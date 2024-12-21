@@ -2,7 +2,6 @@ package cl.jonnattan.emulator.utils;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.client.RestTemplate;
 
 import cl.jonnattan.emulator.interfaces.ICipher;
 
@@ -15,12 +14,10 @@ import cl.jonnattan.emulator.interfaces.ICipher;
  * 
  */
 @Configuration
-public class MyComponets
-{
+public class MyComponets {
 
   @Bean
-  public ICipher getCipher()
-  {
+  ICipher getCipher() {
     return new MyDESCipher();
   }
 
