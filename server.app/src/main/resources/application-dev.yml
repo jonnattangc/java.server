@@ -39,6 +39,7 @@ server:
   
 logging:
   level:
+    web: ${LOG_LEVEL}
     org:
       hibernate:
         SQL: ${LOG_LEVEL}
