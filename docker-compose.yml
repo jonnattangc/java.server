@@ -1,25 +1,24 @@
-version: "3.3"
 services:
   java-service:
-    image: java-server:v1
     container_name: java-server
+    image: java-server:v1
+    build: .
     restart: always
     deploy:
       replicas: 1
     environment:
       PORT: 8089
       CONTEXT: /emulator
-      BD_ADDR: api.jonnattan.cl
+      BD_ADDR: bd.jonna.cl
       BD_PORT: 3306
       BD_NAME: emulator
-      BD_USER: emulator
-      BD_PASS: emulator
+      BD_USER: jonnattan
+      BD_PASS: wsxzaq123
       LOG_LEVEL: info
       AES_KEY: mAFaa23csdas5sdf12sght549u87y8adnjk
     networks:
        - db-net
     ports:
       - 8089:8089
-
 networks:
   db-net:

@@ -4,7 +4,7 @@ echo "[INFO] --------- Se intenta desplegar servidor"
 mv server.app/target/*.jar server.jar
 
 
-export BD_ADDR=api.jonnattan.cl
+export BD_ADDR=bd.jonna.cl
 export BD_PORT=3306
 export BD_NAME=emulator
 export BD_USER=emulator
