@@ -14,3 +14,4 @@ antrun
 .project
 .classpath
 .factorypath
+*.jar
