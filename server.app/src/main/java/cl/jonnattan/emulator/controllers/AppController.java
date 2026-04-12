@@ -1,6 +1,8 @@
 package cl.jonnattan.emulator.controllers;
 
 
+import cl.jonnattan.emulator.dto.AppListConfigurationDTOResponse;
+import cl.jonnattan.emulator.dto.ints.IEmulator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,10 +83,15 @@ public class AppController {
 	}
 
     @GetMapping(value = "/list")
-    public ResponseEntity<String> list(){
+    public ResponseEntity<AppListConfigurationDTOResponse> list(){
         logger.info(UtilConst.LINE);
         HttpStatus status = HttpStatus.OK;
-        String success = "Se guardará el endpoint: /list";
-        return new ResponseEntity<>(success, status);
+        AppListConfigurationDTOResponse response = null;
+        try {
+            response = configService.getConfigurations();
+        } catch (ConfException e) {
+            status = e.getStatus();
+        }
+        return new ResponseEntity<AppListConfigurationDTOResponse>(response, status);
     }
 }

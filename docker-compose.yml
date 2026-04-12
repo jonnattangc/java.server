@@ -14,7 +14,7 @@ services:
       BD_NAME: emulator
       BD_USER: jonnattan
       BD_PASS: wsxzaq123
-      LOG_LEVEL: info
+      LOG_LEVEL: INFO
       AES_KEY: mAFaa23csdas5sdf12sght549u87y8adnjk
     networks:
        - db-net
