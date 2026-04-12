@@ -3,8 +3,8 @@
 # Ruta donde est'a instalado el SDK
 #export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-17.0.3.1.jdk/Contents/Home
 # ac'a poner la ruta donde bajaron el ID
-export MAVEN_HOME=/home/jonnattan/utils/apache-maven-3.8.6
-# export MAVEN_HOME=/Users/jonnattangriffiths/herramientas/apache-maven-3.9.6
+#export MAVEN_HOME=/home/jonnattan/utils/apache-maven-3.8.6
+export MAVEN_HOME=/Users/jonnattangriffiths/tools/apache-maven-3.9.14
 export PATH=$PATH:$MAVEN_HOME/bin
 
 export BD_ADDR=dev.jonnattan.com
