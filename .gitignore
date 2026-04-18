@@ -15,4 +15,6 @@ antrun
 .classpath
 .factorypath
 .vscode/
-.cursor/
+.cursor/*
+!.cursor/skills/
+!.cursor/skills/**
