@@ -39,12 +39,14 @@ server:
   
 logging:
   level:
+    springframework:
+      web: ${LOG_LEVEL}
     web: ${LOG_LEVEL}
     org:
       hibernate:
         SQL: ${LOG_LEVEL}
   cl.jonnattan: ${LOG_LEVEL}
-    
+
 http:
   timeout:
     connect: 90

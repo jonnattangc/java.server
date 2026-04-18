@@ -1,5 +1,7 @@
 package cl.jonnattan.emulator.services;
 
+import cl.jonnattan.emulator.dto.AppConfigurationResponseDTO;
+import cl.jonnattan.emulator.dto.AppListConfigurationDTOResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,8 @@ import cl.jonnattan.emulator.dto.AppConfigurationRequestDTO;
 import cl.jonnattan.emulator.enums.TypeResponse;
 import cl.jonnattan.emulator.interfaces.IConfigurations;
 import cl.jonnattan.emulator.utils.ConfException;
+
+import java.util.List;
 
 @Service
 public class AppConfigService implements IConfigurations {
@@ -103,7 +107,32 @@ public class AppConfigService implements IConfigurations {
 		}
 		return response;
 	}
-	
+
+    @Override
+    @Transactional(readOnly = true)
+    public AppListConfigurationDTOResponse getConfigurations() throws ConfException {
+        logger.info("Service para listar las configuraciones");
+        AppListConfigurationDTOResponse configurations = new AppListConfigurationDTOResponse();
+        List<AppConfigurationResponseDTO> list = configurations.getConfigurations();
+        try {
+            Iterable<Configuration> confs = configRepository.findAll();
+            for(Configuration c : confs) {
+                AppConfigurationResponseDTO config = new AppConfigurationResponseDTO();
+                config.setType( c.getType().getValue() );
+                config.setCode( c.getCode() );
+                config.setMessage( c.getMessage() );
+                config.setError( c.getError() );
+                config.setEndPoint( c.getEndpoint() );
+                config.setLastUpdate( c.getUpdatedAt() );
+                list.add( config );
+            }
+            configurations.setConfigurations( list );
+        } catch (Exception e) {
+            throw new ConfException(e.getMessage());
+        }
+        return configurations;
+    }
+
 	@SuppressWarnings("null")
 	@Override
 	public void evaluateEndpoint(String endpoint) throws ConfException {

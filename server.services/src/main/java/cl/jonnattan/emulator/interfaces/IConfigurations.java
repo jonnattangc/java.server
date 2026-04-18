@@ -1,6 +1,7 @@
 package cl.jonnattan.emulator.interfaces;
 
 import cl.jonnattan.emulator.dto.AppConfigurationRequestDTO;
+import cl.jonnattan.emulator.dto.AppListConfigurationDTOResponse;
 import cl.jonnattan.emulator.utils.ConfException;
 
 public interface IConfigurations {
@@ -10,6 +11,8 @@ public interface IConfigurations {
 	public String updateConfigurations(AppConfigurationRequestDTO request) throws ConfException;
 
 	public String createConfigurations(AppConfigurationRequestDTO request) throws ConfException;
+
+    public AppListConfigurationDTOResponse getConfigurations() throws ConfException;
 
 	public void evaluateEndpoint(String endpoint) throws ConfException;
 }
