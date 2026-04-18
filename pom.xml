@@ -14,13 +14,13 @@
 		<url/>
 	</organization>
 	<properties>
-		<maven.compiler.source>17</maven.compiler.source>
-		<maven.compiler.target>17</maven.compiler.target>
+		<maven.compiler.source>21</maven.compiler.source>
+		<maven.compiler.target>21</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.version>17</java.version>
+		<java.version>21</java.version>
 		<test.version>1.2.0-SNAPSHOT</test.version>
-		<spring.boot.version>3.2.11</spring.boot.version>
+		<spring.boot.version>4.0.5</spring.boot.version>
 		<junit.version>4.13.1</junit.version>
 		<javax.json-api.version>1.1.4</javax.json-api.version>
 		<hibernate-types-52.version>2.6.1</hibernate-types-52.version>
