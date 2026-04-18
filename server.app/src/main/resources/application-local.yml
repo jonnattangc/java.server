@@ -1,0 +1,49 @@
+spring:
+  application:
+    name: Emulador
+  datasource:
+    url: jdbc:h2:mem:emulador;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;NON_KEYWORDS=USER
+    username: sa
+    password:
+    driverClassName: org.h2.Driver
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+server:
+  address: 0.0.0.0
+  port: 8080
+  servlet:
+    context-path: /
+
+logging:
+  level:
+    springframework:
+      web: INFO
+    web: INFO
+    org:
+      hibernate:
+        SQL: INFO
+  cl.jonnattan: INFO
+
+http:
+  timeout:
+    connect: 90
+    read: 90
+
+app:
+  secure:
+    aes:
+      key: 1234567890123456
+
+cxp:
+  select: 1
+  urls: http://localhost
+  otkeys: local-ot-key
+  geokeys: local-geo-key
+  cotkeys: local-cot-key

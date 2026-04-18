@@ -26,7 +26,7 @@
 		<hibernate-types-52.version>2.6.1</hibernate-types-52.version>
 		<javax.json.version>1.1.4</javax.json.version>
 		<org.osgi.core.version>1.0.0</org.osgi.core.version>
-		<lombok.version>1.18.30</lombok.version>
+		<lombok.version>1.18.38</lombok.version>
 		<maven-bundle-plugin.version>4.2.1</maven-bundle-plugin.version>
 	</properties>
 
@@ -123,5 +123,37 @@
 				<filtering>true</filtering>
 			</testResource>
 		</testResources>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>${spring.boot.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.felix</groupId>
+					<artifactId>maven-bundle-plugin</artifactId>
+					<version>${maven-bundle-plugin.version}</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.15.0</version>
+				<configuration>
+					<fork>true</fork>
+					<release>${java.version}</release>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+							<version>${lombok.version}</version>
+						</path>
+					</annotationProcessorPaths>
+				</configuration>
+			</plugin>
+		</plugins>
 	</build>
 </project>
