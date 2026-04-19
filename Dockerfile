@@ -1,4 +1,4 @@
-FROM maven:3.9-eclipse-temurin-17 as compilador
+FROM maven:3.9-eclipse-temurin-25 as compilador
 
 RUN echo "Se crea carpeta de servidor" && \
     mkdir app
@@ -10,7 +10,7 @@ RUN echo "Se compila la aplicación" && \
     mvn clean package -DskipTests && \
     cp -f server.app/target/*.jar ./servidor.jar
 
-FROM eclipse-temurin:17-jre
+FROM eclipse-temurin:25-jre
 
 LABEL version=1.0.0
 LABEL description="Jonnattan Griffiths"

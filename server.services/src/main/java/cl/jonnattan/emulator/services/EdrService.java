@@ -2,7 +2,6 @@ package cl.jonnattan.emulator.services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -25,17 +24,18 @@ public class EdrService implements IEdr {
 
 	private static final Logger logger = LoggerFactory.getLogger(EdrService.class);
 
-	@Autowired
-	private ObjectMapper objectMapper;
+	private final ObjectMapper objectMapper;
+	private final IDaoUser userRepository;
+	private final IUtilities util;
+	private final RestTemplate restTemplateWithTimeout;
 
-	@Autowired
-	private IDaoUser userRepository;
-
-	@Autowired
-	private IUtilities util;
-
-	@Autowired
-	private RestTemplate restTemplateWithTimeout;
+	public EdrService(ObjectMapper objectMapper, IDaoUser userRepository, IUtilities util,
+			RestTemplate restTemplateWithTimeout) {
+		this.objectMapper = objectMapper;
+		this.userRepository = userRepository;
+		this.util = util;
+		this.restTemplateWithTimeout = restTemplateWithTimeout;
+	}
 
 	@Transactional
 	@Override
@@ -57,8 +57,9 @@ public class EdrService implements IEdr {
 
 			String textRealLogin = realLogin(name, pass, realm);
 
-			if (textRealLogin != null)
+			if (textRealLogin != null) {
 				accesstoken = textRealLogin;
+			}
 			User user = userRepository.findByNameUserAndPassword(name, pass);
 			if (user != null) {
 				user.setAccessToken(accesstoken);
@@ -89,7 +90,7 @@ public class EdrService implements IEdr {
 
 	/**
 	 * Realiza el login en la pagina
-	 * 
+	 *
 	 * @param name
 	 * @param pass
 	 * @param realm
@@ -107,8 +108,9 @@ public class EdrService implements IEdr {
 			httpHeaders.set("realm", realm);
 			// ticket x defecto
 			String url = "https://certificacion.edenred.cl/EdenredPrivateWebPortal/sitefinity/Authenticate/SWT";
-			if (realm.contains("EdenredJunaebWebPortal"))
+			if (realm.contains("EdenredJunaebWebPortal")) {
 				url = "https://certificacion.edenred.cl/EdenredJunaebWebPortal/Sitefinity/Authenticate/SWT";
+			}
 
 			HttpEntity<?> request = new HttpEntity<>(httpHeaders);
 			logger.info("endpoint: {} ", url);
@@ -117,8 +119,9 @@ public class EdrService implements IEdr {
 			logger.info("Response: {}", msg);
 
 			body = response.getBody();
-			if (body == null || !body.contains("wrap_access_token"))
+			if (body == null || !body.contains("wrap_access_token")) {
 				body = null;
+			}
 
 		} catch (NumberFormatException e) {
 			logger.error("Error", e);

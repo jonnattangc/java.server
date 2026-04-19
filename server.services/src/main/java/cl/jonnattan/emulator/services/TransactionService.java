@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,15 +32,18 @@ public class TransactionService implements ITransactions {
 
 	private static final Logger logger = LoggerFactory.getLogger(TransactionService.class);
 
-	@Autowired
-	private IDaoTransaction transactionRepository;
-	@Autowired
-	private IDaoCard cardRepository;
-	@Autowired
-	private IDaoDevice deviceRepository;
+	private final IDaoTransaction transactionRepository;
+	private final IDaoCard cardRepository;
+	private final IDaoDevice deviceRepository;
+	private final IUtilities util;
 
-	@Autowired
-	private IUtilities util;
+	public TransactionService(IDaoTransaction transactionRepository, IDaoCard cardRepository,
+			IDaoDevice deviceRepository, IUtilities util) {
+		this.transactionRepository = transactionRepository;
+		this.cardRepository = cardRepository;
+		this.deviceRepository = deviceRepository;
+		this.util = util;
+	}
 
 	@Override
 	@Transactional
@@ -70,10 +72,12 @@ public class TransactionService implements ITransactions {
 					if (device != null) {
 						logger.info("Card: {}", device.getCard());
 						Card card = cardRepository.findByToken(device.getCard());
-						if (card != null)
+						if (card != null) {
 							cardNumber = card.getCardNumber();
-					} else
+						}
+					} else {
 						logger.info("####### dispositivo no encontrado");
+					}
 				}
 			}
 			String msg = util.decryptRSA(dataCard);
@@ -107,9 +111,9 @@ public class TransactionService implements ITransactions {
 			response.setTransaction(request.getTransaction());
 			// Esto es lo que importa para IONIX
 			EdrPaymentAuthorizeResponseDTO.Transactionex trans = new EdrPaymentAuthorizeResponseDTO.Transactionex();
-			trans.setStatus("APPROVED");
-			trans.setAvailablebalance("1005260.0");
-			trans.setResponsecode("200");
+			trans.setStatus(UtilConst.STATUS_APPROVED);
+			trans.setAvailablebalance(UtilConst.DEFAULT_BALANCE);
+			trans.setResponsecode(UtilConst.RESPONSE_CODE_200);
 			trans.setAuthnumber(authId);
 
 			response.setTransactionex(trans);
@@ -140,33 +144,35 @@ public class TransactionService implements ITransactions {
 			String idTransaction = request.getTransactionVoid().getAuthorization().getId();
 
 			Transaction transaction = transactionRepository.findByAuthorizationId(idTransaction);
-			if (transaction != null) {
-				if (transaction.getStatus().equals(TransactionStatus.AUTHORIZED)) {
-					transactionRepository.saveStatusById(TransactionStatus.REVERSED, transaction.getId(), new Date());
-					response.setRequestorInfo(request.getRequestorInfo());
-					response.setTransactionVoid(request.getTransactionVoid());
-
-					// Esto es lo que importa para IONIX
-					EdrPaymentReverseResponseDTO.Transactionex trans = new EdrPaymentReverseResponseDTO.Transactionex();
-					trans.setStatus("APPROVED");
-					trans.setAvailablebalance("1005260.0");
-					trans.setResponsecode("200");
-					trans.setAuthnumber(idTransaction);
-					trans.setMcc("EMULATOR-MCC");
-					response.setTransactionex(trans);
-					// se devuelve la plata a la tarjeta
-					Card card = cardRepository.findByCardNumber(transaction.getCard());
-					if (card != null) {
-						Long value = card.getAmount();
-						value += Long.parseLong(transaction.getAmount());
-						trans.setAvailablebalance(String.format("%.1f",(double) value));
-						cardRepository.saveAmountById(value, card.getId(), new Date());
-					}
-				} else
-					throw new EmulatorException("Transaction invalid status");
-			} else
+			if (transaction == null) {
 				throw new EmulatorException("Transaction not found");
+			}
+			if (!transaction.getStatus().equals(TransactionStatus.AUTHORIZED)) {
+				throw new EmulatorException("Transaction invalid status");
+			}
+			transactionRepository.saveStatusById(TransactionStatus.REVERSED, transaction.getId(), new Date());
+			response.setRequestorInfo(request.getRequestorInfo());
+			response.setTransactionVoid(request.getTransactionVoid());
 
+			// Esto es lo que importa para IONIX
+			EdrPaymentReverseResponseDTO.Transactionex trans = new EdrPaymentReverseResponseDTO.Transactionex();
+			trans.setStatus(UtilConst.STATUS_APPROVED);
+			trans.setAvailablebalance(UtilConst.DEFAULT_BALANCE);
+			trans.setResponsecode(UtilConst.RESPONSE_CODE_200);
+			trans.setAuthnumber(idTransaction);
+			trans.setMcc(UtilConst.EMULATOR_MCC);
+			response.setTransactionex(trans);
+			// se devuelve la plata a la tarjeta
+			Card card = cardRepository.findByCardNumber(transaction.getCard());
+			if (card != null) {
+				Long value = card.getAmount();
+				value += Long.parseLong(transaction.getAmount());
+				trans.setAvailablebalance(String.format("%.1f",(double) value));
+				cardRepository.saveAmountById(value, card.getId(), new Date());
+			}
+
+		} catch (EmulatorException e) {
+			throw e;
 		} catch (Exception e) {
 			logger.error("Error: ", e);
 			throw new EmulatorException("Error reversando transacción", "32441");
@@ -194,7 +200,7 @@ public class TransactionService implements ITransactions {
 			}
 			EdrPaymentCreateCryptogramResponseDTO.TokenInfo tokenInfo = new EdrPaymentCreateCryptogramResponseDTO.TokenInfo();
 			EdrPaymentCreateCryptogramResponseDTO.CripData data = new EdrPaymentCreateCryptogramResponseDTO.CripData();
-			data.setAtc("ATC-EMULATOR");
+			data.setAtc(UtilConst.ATC_EMULATOR);
 			data.setCriptogram(cryptogram);
 			tokenInfo.setData(data);
 			tokenInfo.setReference("REF-EMULATOR");

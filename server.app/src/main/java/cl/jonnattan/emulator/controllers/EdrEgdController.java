@@ -1,9 +1,7 @@
 package cl.jonnattan.emulator.controllers;
 
-import java.util.logging.Logger;
-
-
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,22 +19,25 @@ import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Controlles principal de emulador
- * 
+ *
  * @author Jonnattan Griffiths
  * @since Programa EMULADOR
  * @version 1.0 del 22-06-2020
- * 
+ *
  */
 @RestController
 @RequestMapping("/")
 public class EdrEgdController {
-	private static final Logger logger = Logger.getLogger(EdrEgdController.class.getName());
 
-	@Autowired
-	private ICard cardService;
+	private static final Logger logger = LoggerFactory.getLogger(EdrEgdController.class);
 
-	@Autowired
-	private IConfigurations configService;
+	private final ICard cardService;
+	private final IConfigurations configService;
+
+	public EdrEgdController(ICard cardService, IConfigurations configService) {
+		this.cardService = cardService;
+		this.configService = configService;
+	}
 
 	@RequestMapping(value = "/api/v1/foods/cards/**")
 	public ResponseEntity<IEmulator> edgCardSearch(HttpServletRequest request, @RequestHeader HttpHeaders headerRx) {
@@ -59,7 +60,7 @@ public class EdrEgdController {
 			((ErrorData) response).setCode(e.getCode());
 			((ErrorData) response).setMessage(e.getMessage());
 		}
-		return new ResponseEntity<IEmulator>(response, headersTx, status);
+		return new ResponseEntity<>(response, headersTx, status);
 	}
 
 }

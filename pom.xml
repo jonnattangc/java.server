@@ -21,13 +21,13 @@
 		<java.version>21</java.version>
 		<test.version>1.2.0-SNAPSHOT</test.version>
 		<spring.boot.version>4.0.5</spring.boot.version>
-		<junit.version>4.13.1</junit.version>
 		<javax.json-api.version>1.1.4</javax.json-api.version>
 		<hibernate-types-52.version>2.6.1</hibernate-types-52.version>
 		<javax.json.version>1.1.4</javax.json.version>
 		<org.osgi.core.version>1.0.0</org.osgi.core.version>
 		<lombok.version>1.18.38</lombok.version>
 		<maven-bundle-plugin.version>4.2.1</maven-bundle-plugin.version>
+		<jacoco.version>0.8.12</jacoco.version>
 	</properties>
 
 	<dependencyManagement>
@@ -41,12 +41,6 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-test</artifactId>
 				<version>${spring.boot.version}</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>${junit.version}</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
@@ -153,6 +147,26 @@
 						</path>
 					</annotationProcessorPaths>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco.version}</version>
+				<executions>
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

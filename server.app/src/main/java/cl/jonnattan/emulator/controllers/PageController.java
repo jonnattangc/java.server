@@ -3,7 +3,6 @@ package cl.jonnattan.emulator.controllers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,16 +24,17 @@ import cl.jonnattan.emulator.interfaces.IConfigurations;
 import cl.jonnattan.emulator.interfaces.IPage;
 import cl.jonnattan.emulator.utils.ConfException;
 import cl.jonnattan.emulator.utils.EmulatorException;
+import cl.jonnattan.emulator.utils.UtilConst;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 /**
  * Controller para solicitudes desde la web personal
- * 
+ *
  * @author Jonnattan Griffiths
  * @since Programa EMULADOR
  * @version 1.0 del 20-02-2023
- * 
+ *
  */
 @RestController
 @RequestMapping("/page")
@@ -42,18 +42,20 @@ public class PageController {
 
 	private static final Logger logger = LoggerFactory.getLogger(PageController.class);
 
-	@Autowired
-	private IPage pageService;
+	private final IPage pageService;
+	private final IConfigurations configService;
 
-	@Autowired
-	private IConfigurations configService;
+	public PageController(IPage pageService, IConfigurations configService) {
+		this.pageService = pageService;
+		this.configService = configService;
+	}
+
 	@CrossOrigin(origins = "*")
 	@PostMapping(path = "/users/save", consumes = { MediaType.APPLICATION_FORM_URLENCODED_VALUE }, produces = {
 			MediaType.TEXT_HTML_VALUE })
-
 	public ResponseEntity<IEmulator> save(@Valid @RequestParam MultiValueMap<String, String> params,
 			HttpServletRequest request, @RequestHeader HttpHeaders headers) {
-		logger.info("---------------------------------------------------------------------------------------");
+		logger.info(UtilConst.LINE);
 		HttpStatus status = HttpStatus.OK;
 		IEmulator response = null;
 		HttpHeaders headersTx = new HttpHeaders();

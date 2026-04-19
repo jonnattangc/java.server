@@ -2,10 +2,8 @@ package cl.jonnattan.emulator.controllers;
 
 
 import cl.jonnattan.emulator.dto.AppListConfigurationDTOResponse;
-import cl.jonnattan.emulator.dto.ints.IEmulator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,20 +23,23 @@ import jakarta.validation.Valid;
  * Controller de configuraci'on de emulador
  * Sirve para configurar como queremos que respondan los servicios
  * ac'a definidos
- * 
+ *
  * @author Jonnattan Griffiths
  * @since Programa EMULADOR
  * @version 1.0 del 22-06-2020
- * 
+ *
  */
 @RestController
 @RequestMapping("/config")
 public class AppController {
 
 	private static final Logger logger = LoggerFactory.getLogger(AppController.class);
-	
-	@Autowired
-	private IConfigurations configService;
+
+	private final IConfigurations configService;
+
+	public AppController(IConfigurations configService) {
+		this.configService = configService;
+	}
 
 	@PostMapping(value = "/update")
 	public ResponseEntity<String> update(@Valid @RequestBody AppConfigurationRequestDTO request) {
@@ -82,16 +83,16 @@ public class AppController {
 		return new ResponseEntity<>(success, status);
 	}
 
-    @GetMapping(value = "/list")
-    public ResponseEntity<AppListConfigurationDTOResponse> list(){
-        logger.info(UtilConst.LINE);
-        HttpStatus status = HttpStatus.OK;
-        AppListConfigurationDTOResponse response = null;
-        try {
-            response = configService.getConfigurations();
-        } catch (ConfException e) {
-            status = e.getStatus();
-        }
-        return new ResponseEntity<AppListConfigurationDTOResponse>(response, status);
-    }
+	@GetMapping(value = "/list")
+	public ResponseEntity<AppListConfigurationDTOResponse> list(){
+		logger.info(UtilConst.LINE);
+		HttpStatus status = HttpStatus.OK;
+		AppListConfigurationDTOResponse response = null;
+		try {
+			response = configService.getConfigurations();
+		} catch (ConfException e) {
+			status = e.getStatus();
+		}
+		return new ResponseEntity<>(response, status);
+	}
 }

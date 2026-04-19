@@ -6,10 +6,10 @@ services:
     restart: always
     deploy:
       replicas: 1
-  	env_file:
-          - ../envs/java_server.env
+    env_file:
+      - ../envs/java_server.env
     networks:
-       - db-net
+      - db-net
     ports:
       - 8089:8089
 networks:

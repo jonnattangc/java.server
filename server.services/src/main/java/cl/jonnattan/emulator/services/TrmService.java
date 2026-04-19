@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
@@ -22,8 +21,11 @@ public class TrmService implements ITrm {
 
 	private static final Logger logger = LoggerFactory.getLogger(TrmService.class);
 
-	@Autowired
-	ObjectMapper objectMapper;
+	private final ObjectMapper objectMapper;
+
+	public TrmService(ObjectMapper objectMapper) {
+		this.objectMapper = objectMapper;
+	}
 
 	@Override
 	public EdrTokenLogonResponseDTO logon(String requetor, HttpHeaders headerRx, EdrTokenLogonRequestDTO request)
@@ -33,12 +35,12 @@ public class TrmService implements ITrm {
 		try {
 			String body = objectMapper.writeValueAsString(request);
 			String header = objectMapper.writeValueAsString(headerRx);
-			
-			List<String> list = headerRx.get("requestid");
+
+			List<String> list = headerRx.get(UtilConst.REQUEST_ID);
 			String requestId = list != null && !list.isEmpty() ? list.get(0) : UtilConst.NO_INFO;
-			list = headerRx.get("client_id");
+			list = headerRx.get(UtilConst.CLIENT_ID);
 			String clientId = list != null && !list.isEmpty() ? list.get(0) : UtilConst.NO_INFO;
-			list = headerRx.get("access_token");
+			list = headerRx.get(UtilConst.ACCESS_TOKEN);
 			String accessToken = list != null && !list.isEmpty() ? list.get(0) : UtilConst.NO_INFO;
 
 			logger.info("requestid   : {}", requestId);
@@ -47,7 +49,7 @@ public class TrmService implements ITrm {
 
 			logger.info("Request Body  : {}", body);
 			logger.info("Request Header: {}", header);
-			
+
 		} catch (JsonProcessingException e) {
 			logger.error("Error: ", e);
 			throw new EmulatorException(e.getMessage());
@@ -58,18 +60,18 @@ public class TrmService implements ITrm {
 
 	private EdrTokenLogonResponseDTO getTest() {
 		EdrTokenLogonResponseDTO response = new EdrTokenLogonResponseDTO();
-		
+
 		List<EdrTokenLogonResponseDTO.Tsp> tsps  = new ArrayList<>();
 		EdrTokenLogonResponseDTO.Tsp tsp = new EdrTokenLogonResponseDTO.Tsp();
 		tsp.setId("2e936958-9fbf-11e4-89d3-123b93f75cba");
 		tsp.setPriority(1);
 		tsps.add(tsp);
-		
+
 		EdrTokenLogonResponseDTO.Enrollment enroll = new EdrTokenLogonResponseDTO.Enrollment();
 		List<String> list = new ArrayList<>();
 		list.add("PAN_16");
 		enroll.setParams( list );
-		
+
 		List<EdrTokenLogonResponseDTO.Bin> bins = new ArrayList<>();
 		//--------------------------------------
 		EdrTokenLogonResponseDTO.Bin bin = new EdrTokenLogonResponseDTO.Bin();

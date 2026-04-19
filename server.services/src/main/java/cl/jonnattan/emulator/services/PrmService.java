@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
@@ -21,8 +20,11 @@ public class PrmService implements IPrm {
 
 	private static final Logger logger = LoggerFactory.getLogger(PrmService.class);
 
-	@Autowired
-	ObjectMapper objectMapper;
+	private final ObjectMapper objectMapper;
+
+	public PrmService(ObjectMapper objectMapper) {
+		this.objectMapper = objectMapper;
+	}
 
 	@Override
 	public EdrPaymentLogonResponseDTO logon(String requestor, HttpHeaders headerRx, EdrPaymentLogonRequestDTO request)
