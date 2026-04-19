@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -33,11 +32,8 @@ public class CxpService implements ICxp {
 		STAGING, DEVELOP, PRODUCTION
 	}
 
-	@Autowired
-	private RestTemplate restTemplateWithTimeout;
-
-	@Autowired
-	private IUtilities util;
+	private final RestTemplate restTemplateWithTimeout;
+	private final IUtilities util;
 
 	@Value("${cxp.urls}")
 	private String address;
@@ -59,6 +55,11 @@ public class CxpService implements ICxp {
 	private int index;
 
 	private Enviroments enviroment = Enviroments.DEVELOP;
+
+	public CxpService(RestTemplate restTemplateWithTimeout, IUtilities util) {
+		this.restTemplateWithTimeout = restTemplateWithTimeout;
+		this.util = util;
+	}
 
 	@PostConstruct
 	public void init() {
@@ -119,8 +120,9 @@ public class CxpService implements ICxp {
 			String msg = String.format("Enviroment %s - Use ApiKey[%s]",enviroment, newKey);
 			logger.info("{}", msg);
 			StringBuilder text = new StringBuilder("keys: ");
-			for (String skey : geokeys)
+			for (String skey : geokeys) {
 				text.append(String.format("%s ",skey));
+			}
 			logger.info("{}", text);
 
 			msg = String.format("Endpoint Proxy: %s",url);
@@ -137,7 +139,7 @@ public class CxpService implements ICxp {
 			response = res.getBody();
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error de comunicacion", e);
 			throw new EmulatorException("Error de comunicacion");
 		}
 
@@ -146,7 +148,7 @@ public class CxpService implements ICxp {
 
 	/**
 	 * Imprime en pantalla
-	 * 
+	 *
 	 * @param request
 	 * @param header
 	 * @throws IOException
@@ -157,8 +159,9 @@ public class CxpService implements ICxp {
 		int dato = -1;
 		ServletInputStream sis = request.getInputStream();
 		ByteBuffer bb = ByteBuffer.allocate(4096);
-		while ((dato = sis.read()) != -1)
+		while ((dato = sis.read()) != -1) {
 			bb.put((byte) dato);
+		}
 		bb.flip();
 		int len = bb.remaining();
 		String body = "";
@@ -188,23 +191,18 @@ public class CxpService implements ICxp {
 
 		String response = "";
 		String uri = request.getRequestURI();
-		try {
-
-			if (uri.contains("/dev") || uri.contains("/develop")) {
-				response = String.format("Enviroment change from %s to Develop",enviroment.name());
-				enviroment = Enviroments.DEVELOP;
-			} else if (uri.contains("/qa") || uri.contains("/quality") || uri.contains("/staging")) {
-				response = String.format("Enviroment change from %s to Staging",enviroment.name());
-				enviroment = Enviroments.STAGING;
-			} else if (uri.contains("/prod") && uri.contains("/production")) {
-				response = String.format("Enviroment change from %s to Production",enviroment.name());
-				enviroment = Enviroments.PRODUCTION;
-			} else {
-				response = String.format("Enviroment not change. Actually is %s",enviroment.name());
-				throw new EmulatorException(response);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		if (uri.contains("/dev") || uri.contains("/develop")) {
+			response = String.format("Enviroment change from %s to Develop",enviroment.name());
+			enviroment = Enviroments.DEVELOP;
+		} else if (uri.contains("/qa") || uri.contains("/quality") || uri.contains("/staging")) {
+			response = String.format("Enviroment change from %s to Staging",enviroment.name());
+			enviroment = Enviroments.STAGING;
+		} else if (uri.contains("/prod") && uri.contains("/production")) {
+			response = String.format("Enviroment change from %s to Production",enviroment.name());
+			enviroment = Enviroments.PRODUCTION;
+		} else {
+			response = String.format("Enviroment not change. Actually is %s",enviroment.name());
+			throw new EmulatorException(response);
 		}
 		logger.info("Response: {}", response);
 		return response;

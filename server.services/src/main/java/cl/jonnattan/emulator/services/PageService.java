@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,11 +28,13 @@ public class PageService implements IPage {
 
 	private static final Logger logger = LoggerFactory.getLogger(PageService.class);
 
-	@Autowired
-	private IDaoUser userRepository;
+	private final IDaoUser userRepository;
+	private final IUtilities util;
 
-	@Autowired
-	private IUtilities util;
+	public PageService(IDaoUser userRepository, IUtilities util) {
+		this.userRepository = userRepository;
+		this.util = util;
+	}
 
 	@Override
 	public IEmulator getUsers(final HttpHeaders header) throws EmulatorException {
@@ -42,8 +43,9 @@ public class PageService implements IPage {
 			Iterable<User> users = userRepository.findAll();
 			response = new UserListDTOResponse();
 			List<UserResponse> list = ((UserListDTOResponse) response).getUsers();
-			for (User user : users)
+			for (User user : users) {
 				list.add(entityToDto(user));
+			}
 		} catch (Exception e) {
 			throw new EmulatorException("Error obteniendo usuario", "6500");
 		}
@@ -52,7 +54,7 @@ public class PageService implements IPage {
 
 	/**
 	 * Convierte el Entity en un DTO
-	 * 
+	 *
 	 * @param user
 	 * @return
 	 */
@@ -95,8 +97,9 @@ public class PageService implements IPage {
 
 			User entity = null;
 
-			if (dto.getNameUser() == null || dto.getNameUser().isEmpty())
+			if (dto.getNameUser() == null || dto.getNameUser().isEmpty()) {
 				throw new EmulatorException("Campo Mail es Obligacion", "6500");
+			}
 
 			entity = userRepository.findByRut(dto.getRut());
 			entity = entity == null ? userRepository.findByMail(dto.getMail()) : entity;
@@ -124,8 +127,10 @@ public class PageService implements IPage {
 			User userbd = userRepository.save(entity);
 			response = new UserSaveResponse();
 			((UserSaveResponse) response).setId(userbd.getId());
+		} catch (EmulatorException e) {
+			throw e;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error guardando usuario", e);
 			throw new EmulatorException("Error guardando usuario", "6500");
 		}
 		return response;

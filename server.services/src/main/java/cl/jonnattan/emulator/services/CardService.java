@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,14 +38,15 @@ public class CardService implements ICard {
 
 	private static final Logger logger = LoggerFactory.getLogger(CardService.class);
 
-	@Autowired
-	private IDaoCard cardRepository;
+	private final IDaoCard cardRepository;
+	private final IDaoDevice deviceRepository;
+	private final IUtilities util;
 
-	@Autowired
-	private IDaoDevice deviceRepository;
-
-	@Autowired
-	private IUtilities util;
+	public CardService(IDaoCard cardRepository, IDaoDevice deviceRepository, IUtilities util) {
+		this.cardRepository = cardRepository;
+		this.deviceRepository = deviceRepository;
+		this.util = util;
+	}
 
 	@Override
 	@Transactional
@@ -72,7 +72,7 @@ public class CardService implements ICard {
 
 			Long rId = Long.parseLong(request.getRequestorInfo().getRid());
 			String dataCard = request.getCardInfo().getData().getProfile();
-			String cardNumber = "**** **** **** ****";
+			String cardNumber = UtilConst.MASKED_CARD;
 			// Card Info es un json que trae el numero de tarjeta...
 			String msg = util.decryptRSA(dataCard);
 
@@ -81,8 +81,9 @@ public class CardService implements ICard {
 			String tokenCard = util.getTokenCard(clientId);
 			if (map != null) {
 				cardNumber = (String) map.get("fpan");
-				if (cardNumber != null)
+				if (cardNumber != null) {
 					tokenCard = util.getTokenCard(cardNumber);
+				}
 			}
 			// busca la tarjeta inscrita
 			Card card = cardRepository.findByCardNumber(cardNumber);
@@ -129,8 +130,9 @@ public class CardService implements ICard {
 
 			if (dataInUrl.indexOf("actions") > 0) {
 				action = EActions.getAction(dataInUrl);
-				if (!action.equals(EActions.NONE))
+				if (!action.equals(EActions.NONE)) {
 					dataInUrl = dataInUrl.replace(action.getEnd(), "");
+				}
 				dataInUrl = dataInUrl.trim();
 			}
 
@@ -142,8 +144,9 @@ public class CardService implements ICard {
 			int dato = -1;
 			ServletInputStream sis = request.getInputStream();
 			ByteBuffer bb = ByteBuffer.allocate(1024);
-			while ((dato = sis.read()) != -1)
+			while ((dato = sis.read()) != -1) {
 				bb.put((byte) dato);
+			}
 			bb.flip();
 			int len = bb.remaining();
 			String body = "";
@@ -219,7 +222,7 @@ public class CardService implements ICard {
 
 	/**
 	 * Procesa busqueda de tarjetas TNP
-	 * 
+	 *
 	 * @param tokenCipher
 	 * @param card
 	 * @return
@@ -239,7 +242,7 @@ public class CardService implements ICard {
 		response.setData(data);
 
 		String[] strs = { "EMULATOR", "EDG", "SERVICES" };
-		meta.setStatus("ACTIVE");
+		meta.setStatus(UtilConst.STATUS_ACTIVE);
 		meta.setMessages(strs);
 		response.setMeta(meta);
 		return response;
@@ -262,25 +265,27 @@ public class CardService implements ICard {
 
 			// el token es del device
 			Device device = deviceRepository.findByToken(token);
-			if (device != null) {
-				logger.info("Dispositivo encontrado encontrado: {} ", token);
-				EdrTokenGetTokenResponseDTO.TokenInfo tokeninfo = new EdrTokenGetTokenResponseDTO.TokenInfo();
-				EdrTokenGetTokenResponseDTO.Profile profile = new EdrTokenGetTokenResponseDTO.Profile();
-				// con el card asociado al enrolamiento
-				Card card = cardRepository.findByToken(device.getCard());
-				if (card != null) {
-					String toCipher = "{\"dpan\":\"" + card.getCardNumber() + "\",\"cvv\":\"123\",\"dexp\":\"12/21\"}";
-					logger.info("DATA: {}", toCipher);
-					profile.setProfile(util.encryptRSA(toCipher));
-					tokeninfo.setData(profile);
-					tokeninfo.setReference(device.getToken());
-					tokeninfo.setStatus("ACTIVE");
-					response.setTokeninfo(tokeninfo);
-				} else
-					throw new EmulatorException("No existe tarjeta para token", "5001");
-			} else
+			if (device == null) {
 				throw new EmulatorException("No existe tarjeta para token", "5001");
+			}
+			logger.info("Dispositivo encontrado encontrado: {} ", token);
+			EdrTokenGetTokenResponseDTO.TokenInfo tokeninfo = new EdrTokenGetTokenResponseDTO.TokenInfo();
+			EdrTokenGetTokenResponseDTO.Profile profile = new EdrTokenGetTokenResponseDTO.Profile();
+			// con el card asociado al enrolamiento
+			Card card = cardRepository.findByToken(device.getCard());
+			if (card == null) {
+				throw new EmulatorException("No existe tarjeta para token", "5001");
+			}
+			String toCipher = "{\"dpan\":\"" + card.getCardNumber() + "\",\"cvv\":\"123\",\"dexp\":\"12/21\"}";
+			logger.info("DATA: {}", toCipher);
+			profile.setProfile(util.encryptRSA(toCipher));
+			tokeninfo.setData(profile);
+			tokeninfo.setReference(device.getToken());
+			tokeninfo.setStatus(UtilConst.STATUS_ACTIVE);
+			response.setTokeninfo(tokeninfo);
 
+		} catch (EmulatorException e) {
+			throw e;
 		} catch (Exception e) {
 			logger.error("Error: ", e);
 			throw new EmulatorException(e.getMessage() != null ? e.getMessage() : "Error desconocido");
@@ -312,7 +317,7 @@ public class CardService implements ICard {
 
 			String dataCard = request.getCardInfo().getData().getProfile();
 
-			String cardNumber = "**** **** **** ****";
+			String cardNumber = UtilConst.MASKED_CARD;
 			String msg = util.decryptRSA(dataCard);
 			logger.info("CardInfo: {}", msg);
 
@@ -321,62 +326,63 @@ public class CardService implements ICard {
 			String tokenCard = util.getTokenCard(clientId);
 			if (map != null) {
 				cardNumber = (String) map.get("fpan");
-				if (cardNumber != null)
+				if (cardNumber != null) {
 					tokenCard = util.getTokenCard(cardNumber);
+				}
 			}
 			logger.info("CARD: {} TOKEN: {}", cardNumber, tokenCard);
 
-			if (cardNumber.equals("**** **** **** ****")) {
+			if (cardNumber.equals(UtilConst.MASKED_CARD)) {
 				throw new EmulatorException("Tarjeta no existe, el metodo search dijo puras mentiras", "5000");
-			} else {
-				Card card = cardRepository.findByCardNumber(cardNumber);
-				if (card != null) {
-					logger.info("Los token de tarjetas son: {}",
-							(tokenCard.equals(card.getToken()) ? "IGUALES" : "DISTINTOS"));
-					if (card.getToken().equals(tokenCard)) {
-						Device device = deviceRepository.findByCard(card.getToken());
-						if (device != null) {
-							logger.info("Dispositivo ya existe, el token es: {}", device.getToken());
-							EdrTokenEnrollResponseDTO.TokenInfo tokenInfo = new EdrTokenEnrollResponseDTO.TokenInfo();
-							tokenInfo.setHref("EMULATOR-REF");
-							tokenInfo.setReference(device.getToken());
-							tokenInfo.setReason("REASON-EMULATOR ");
-							tokenInfo.setStatus("ACTIVE");
-							response.setTokenInfo(tokenInfo);
+			}
+			Card card = cardRepository.findByCardNumber(cardNumber);
+			if (card != null) {
+				logger.info("Los token de tarjetas son: {}",
+						(tokenCard.equals(card.getToken()) ? "IGUALES" : "DISTINTOS"));
+				if (card.getToken().equals(tokenCard)) {
+					Device device = deviceRepository.findByCard(card.getToken());
+					if (device != null) {
+						logger.info("Dispositivo ya existe, el token es: {}", device.getToken());
+						EdrTokenEnrollResponseDTO.TokenInfo tokenInfo = new EdrTokenEnrollResponseDTO.TokenInfo();
+						tokenInfo.setHref(UtilConst.REF_EMULATOR);
+						tokenInfo.setReference(device.getToken());
+						tokenInfo.setReason(UtilConst.REASON_EMULATOR);
+						tokenInfo.setStatus(UtilConst.STATUS_ACTIVE);
+						response.setTokenInfo(tokenInfo);
 
-							CardInfo cardInfo = new CardInfo();
-							cardInfo.setReference(device.getToken());
-							response.setCardInfo(cardInfo);
-							response.setReference(card.getToken());
+						CardInfo cardInfo = new CardInfo();
+						cardInfo.setReference(device.getToken());
+						response.setCardInfo(cardInfo);
+						response.setReference(card.getToken());
 
-						} else {
-							String tokenDevice = util.SHA256(body);
-							logger.info("Dispositivo nuevo, el token es: {}", tokenDevice);
+					} else {
+						String tokenDevice = util.SHA256(body);
+						logger.info("Dispositivo nuevo, el token es: {}", tokenDevice);
 
-							device = new Device();
-							device.setRequest(body);
+						device = new Device();
+						device.setRequest(body);
 
-							device.setToken(tokenDevice);
-							device.setCard(card.getToken());
-							deviceRepository.save(device);
+						device.setToken(tokenDevice);
+						device.setCard(card.getToken());
+						deviceRepository.save(device);
 
-							EdrTokenEnrollResponseDTO.TokenInfo tokenInfo = new EdrTokenEnrollResponseDTO.TokenInfo();
-							tokenInfo.setHref("EMULATOR-REF");
-							tokenInfo.setReference(tokenDevice);
-							tokenInfo.setReason("REASON-EMULATOR ");
-							tokenInfo.setStatus("ACTIVE");
-							response.setTokenInfo(tokenInfo);
+						EdrTokenEnrollResponseDTO.TokenInfo tokenInfo = new EdrTokenEnrollResponseDTO.TokenInfo();
+						tokenInfo.setHref(UtilConst.REF_EMULATOR);
+						tokenInfo.setReference(tokenDevice);
+						tokenInfo.setReason(UtilConst.REASON_EMULATOR);
+						tokenInfo.setStatus(UtilConst.STATUS_ACTIVE);
+						response.setTokenInfo(tokenInfo);
 
-							CardInfo cardInfo = new CardInfo();
-							cardInfo.setReference(card.getToken());
-							response.setCardInfo(cardInfo);
-							response.setReference(card.getToken());
-						}
+						CardInfo cardInfo = new CardInfo();
+						cardInfo.setReference(card.getToken());
+						response.setCardInfo(cardInfo);
+						response.setReference(card.getToken());
 					}
 				}
-
 			}
 
+		} catch (EmulatorException e) {
+			throw e;
 		} catch (Exception e) {
 			logger.error("Error: ", e);
 			throw new EmulatorException(e.getMessage());

@@ -1,8 +1,7 @@
 package cl.jonnattan.emulator.controllers;
 
-import java.util.logging.Logger;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,18 +19,23 @@ import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Controlles de conf de emulador
- * 
+ *
  * @author Jonnattan Griffiths
- * @since Programa EMULADOR 
+ * @since Programa EMULADOR
  * @version 1.0 del 11-05-2021
- * 
+ *
  */
 @RestController
 @RequestMapping("/cxp")
 public class CxpController {
-	private static final Logger logger = Logger.getLogger(CxpController.class.getName());
-	@Autowired
-	private ICxp cxpService;
+
+	private static final Logger logger = LoggerFactory.getLogger(CxpController.class);
+
+	private final ICxp cxpService;
+
+	public CxpController(ICxp cxpService) {
+		this.cxpService = cxpService;
+	}
 
 	@PostMapping(value = "/**")
 	public ResponseEntity<ICxpResponse> postCxp(HttpServletRequest request, @RequestHeader HttpHeaders headerRx) {

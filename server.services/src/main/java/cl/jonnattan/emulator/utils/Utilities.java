@@ -4,7 +4,8 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.bouncycastle.util.encoders.Base64;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -17,17 +18,20 @@ import cl.jonnattan.emulator.interfaces.IUtilities;
 @Component
 public class Utilities implements IUtilities {
 
-	@Autowired
-	private EncrypterBusinessLogicService rsaCipher;
+	private static final Logger logger = LoggerFactory.getLogger(Utilities.class);
 
-	@Autowired
-	private ObjectMapper objectMapper;
+	private final EncrypterBusinessLogicService rsaCipher;
+	private final ObjectMapper objectMapper;
+	private final ICipher aesCipher;
+	private final ISignature signature;
 
-	@Autowired
-	private ICipher aesCipher;
-
-	@Autowired
-	private ISignature signature;
+	public Utilities(EncrypterBusinessLogicService rsaCipher, ObjectMapper objectMapper, ICipher aesCipher,
+			ISignature signature) {
+		this.rsaCipher = rsaCipher;
+		this.objectMapper = objectMapper;
+		this.aesCipher = aesCipher;
+		this.signature = signature;
+	}
 
 	@Override
 	public long cksumSHA256(String data) {
@@ -48,7 +52,7 @@ public class Utilities implements IUtilities {
 				byte[] decryptedData = rsaCipher.decrypt(encryptedData);
 				result = new String(decryptedData);
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("Error decryptRSA", e);
 				result = "";
 			}
 		}
@@ -66,7 +70,7 @@ public class Utilities implements IUtilities {
 				result = new String(bytes);
 
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("Error encryptRSA", e);
 				result = "";
 			}
 		}
@@ -79,7 +83,7 @@ public class Utilities implements IUtilities {
 		try {
 			resp = (obj != null) ? objectMapper.writeValueAsString(obj) : "NULL";
 		} catch (JsonProcessingException e) {
-			e.printStackTrace();
+			logger.error("Error toJson", e);
 			resp = "ERROR Convirtiendo a JSON";
 		}
 		return resp;
@@ -92,7 +96,7 @@ public class Utilities implements IUtilities {
 		try {
 			map = objectMapper.readValue(json, Map.class);
 		} catch (IOException | NullPointerException e) {
-			e.printStackTrace();
+			logger.error("Error toMap", e);
 		}
 		return map;
 	}
@@ -104,7 +108,7 @@ public class Utilities implements IUtilities {
 			try {
 				result = aesCipher.decrypt(data);
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("Error decryptAES", e);
 				result = "";
 			}
 		}

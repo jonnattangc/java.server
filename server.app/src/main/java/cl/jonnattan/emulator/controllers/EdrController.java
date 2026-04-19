@@ -1,8 +1,7 @@
 package cl.jonnattan.emulator.controllers;
 
-import java.util.logging.Logger;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,27 +19,30 @@ import cl.jonnattan.emulator.utils.EmulatorException;
 
 /**
  * Controlles principal de emulador
- * 
+ *
  * @author Jonnattan Griffiths
- * @since Programa EMULADOR 
+ * @since Programa EMULADOR
  * @version 1.0 del 22-06-2020
- * 
+ *
  */
 @RestController
 @RequestMapping("/edr")
 public class EdrController {
-	private static final Logger logger = Logger.getLogger(EdrController.class.getName());
 
-	@Autowired
-	private IEdr edrService;
+	private static final Logger logger = LoggerFactory.getLogger(EdrController.class);
 
-	@Autowired
-	private IConfigurations configService;
+	private final IEdr edrService;
+	private final IConfigurations configService;
+
+	public EdrController(IEdr edrService, IConfigurations configService) {
+		this.edrService = edrService;
+		this.configService = configService;
+	}
 
 	@PostMapping(path = "/login/tickettest", consumes = { MediaType.APPLICATION_FORM_URLENCODED_VALUE }, produces = { MediaType.APPLICATION_FORM_URLENCODED_VALUE })
 	public ResponseEntity<String> handleNonBrowserSubmissions(@RequestHeader MultiValueMap<String, String> headersRx) {
 		logger.info("****************************/login/ticket****************************");
-		logger.info("REALM: " + headersRx.get("realm"));
+		logger.info("REALM: {}", headersRx.get("realm"));
 		return new ResponseEntity<>("Thank you for submitting feedback", HttpStatus.OK);
 	}
 

@@ -1,10 +1,9 @@
 package cl.jonnattan.emulator.controllers;
 
 import java.util.UUID;
-import java.util.logging.Logger;
 
-
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,39 +31,41 @@ import cl.jonnattan.emulator.interfaces.ITransactions;
 import cl.jonnattan.emulator.interfaces.ITrm;
 import cl.jonnattan.emulator.utils.ConfException;
 import cl.jonnattan.emulator.utils.EmulatorException;
+import cl.jonnattan.emulator.utils.UtilConst;
 import jakarta.validation.Valid;
 
 /**
  * Controlles principal de emulador
- * 
+ *
  * @author Jonnattan Griffiths
  * @since Programa EMULADOR
  * @version 1.0 del 22-06-2020
- * 
+ *
  */
 @RestController
 @RequestMapping("/")
 public class CetipaController {
-	private static final Logger logger = Logger.getLogger(CetipaController.class.getName());
 
-	@Autowired
-	private ITransactions transactionService;
+	private static final Logger logger = LoggerFactory.getLogger(CetipaController.class);
 
-	@Autowired
-	private ITrm trmService;
+	private final ITransactions transactionService;
+	private final ITrm trmService;
+	private final IPrm prmService;
+	private final ICard cardService;
+	private final IConfigurations configService;
 
-	@Autowired
-	private IPrm prmService;
-
-	@Autowired
-	private ICard cardService;
-
-	@Autowired
-	private IConfigurations configService;
+	public CetipaController(ITransactions transactionService, ITrm trmService, IPrm prmService, ICard cardService,
+			IConfigurations configService) {
+		this.transactionService = transactionService;
+		this.trmService = trmService;
+		this.prmService = prmService;
+		this.cardService = cardService;
+		this.configService = configService;
+	}
 
 	/**
 	 * Autorizar transaccion
-	 * 
+	 *
 	 * @param transaction
 	 * @param headersRx
 	 * @return
@@ -102,8 +103,8 @@ public class CetipaController {
 		IEmulator response = null;
 		HttpHeaders headersTx = new HttpHeaders();
 		// Se pasa el mismo requestid
-		String id = headersRx.get("requestid").get(0);
-		headersTx.add("requestid", id);
+		String id = headersRx.get(UtilConst.REQUEST_ID).get(0);
+		headersTx.add(UtilConst.REQUEST_ID, id);
 		HttpStatus status = HttpStatus.OK;
 		try {
 			configService.evaluateEndpoint("/pay/ptm/v1/voids");
@@ -125,7 +126,7 @@ public class CetipaController {
 
 	/**
 	 * Enrola una tarjeta en apitec.
-	 * 
+	 *
 	 * @param request
 	 * @param headersRx
 	 * @return
@@ -152,11 +153,11 @@ public class CetipaController {
 			((ErrorData) response).setMessage(e.getMessage());
 		}
 
-		return new ResponseEntity<IEmulator>(response, headersTx, status);
+		return new ResponseEntity<>(response, headersTx, status);
 	}
 
 	/**
-	 * 
+	 *
 	 * @param request
 	 * @param headersRx
 	 * @return
@@ -183,11 +184,11 @@ public class CetipaController {
 			((ErrorData) response).setMessage(e.getMessage());
 		}
 
-		return new ResponseEntity<IEmulator>(response, headersTx, status);
+		return new ResponseEntity<>(response, headersTx, status);
 	}
 
 	/**
-	 * 
+	 *
 	 * @param request
 	 * @param headersRx
 	 * @return
@@ -212,11 +213,11 @@ public class CetipaController {
 			((ErrorData) response).setCode(e.getCode());
 			((ErrorData) response).setMessage(e.getMessage());
 		}
-		return new ResponseEntity<IEmulator>(response, headersTx, status);
+		return new ResponseEntity<>(response, headersTx, status);
 	}
 
 	/**
-	 * 
+	 *
 	 * @param request
 	 * @param headersRx
 	 * @return
@@ -228,20 +229,20 @@ public class CetipaController {
 		HttpHeaders headersTx = new HttpHeaders();
 		HttpStatus status = HttpStatus.OK;
 
-		String requestid = headerRx.get("requestid").get(0);
-		String client_id = headerRx.get("client_id").get(0);
-		String access_token = headerRx.get("access_token").get(0);
+		String requestid = headerRx.get(UtilConst.REQUEST_ID).get(0);
+		String clientId = headerRx.get(UtilConst.CLIENT_ID).get(0);
+		String accessToken = headerRx.get(UtilConst.ACCESS_TOKEN).get(0);
 
-		logger.info("requestid   : " + requestid);
-		logger.info("client_id   : " + client_id);
-		logger.info("access_token: " + access_token);
-		logger.info("token       : " + token);
+		logger.info("requestid   : {}", requestid);
+		logger.info("client_id   : {}", clientId);
+		logger.info("access_token: {}", accessToken);
+		logger.info("token       : {}", token);
 
-		return new ResponseEntity<String>("OK", headersTx, status);
+		return new ResponseEntity<>("OK", headersTx, status);
 	}
 
 	/**
-	 * 
+	 *
 	 * @param requestor
 	 * @param request
 	 * @param header
@@ -260,12 +261,13 @@ public class CetipaController {
 			// Este token es muy importante. Apitec lo cambi'o hace poco a un valor m'as
 			// grande
 
-			String accessToken = "EMULATOR-PAYMENT";
-			for (int i = 0; i < 100; i++)
-				accessToken += "-" + UUID.randomUUID().toString();
+			StringBuilder accessToken = new StringBuilder("EMULATOR-PAYMENT");
+			for (int i = 0; i < 100; i++) {
+				accessToken.append("-").append(UUID.randomUUID().toString());
+			}
 
-			headersTx.add("access_token", accessToken);
-			logger.info("PRM Response Header[access_token]: " + accessToken);
+			headersTx.add(UtilConst.ACCESS_TOKEN, accessToken.toString());
+			logger.info("PRM Response Header[access_token]: {}", accessToken);
 		} catch (EmulatorException e) {
 			status = HttpStatus.CONFLICT;
 			response = new ErrorData();
@@ -277,11 +279,11 @@ public class CetipaController {
 			((ErrorData) response).setCode(e.getCode());
 			((ErrorData) response).setMessage(e.getMessage());
 		}
-		return new ResponseEntity<IEmulator>(response, headersTx, status);
+		return new ResponseEntity<>(response, headersTx, status);
 	}
 
 	/**
-	 * 
+	 *
 	 * @param requestor
 	 * @param request
 	 * @param headersRx
@@ -297,15 +299,16 @@ public class CetipaController {
 		try {
 			configService.evaluateEndpoint("/tsp/trm/v1/requestors/{requestor}/logon");
 			response = trmService.logon(requestor, headersRx, request);
-			
-			
-			String accessToken = "EMULATOR-TOKEN";
-			for (int i = 0; i < 100; i++)
-				accessToken += "-" + UUID.randomUUID().toString();
 
-			headersTx.add("access_token", accessToken);
-			logger.info("TRM Response Header[access_token]: " + accessToken);
-			
+
+			StringBuilder accessToken = new StringBuilder("EMULATOR-TOKEN");
+			for (int i = 0; i < 100; i++) {
+				accessToken.append("-").append(UUID.randomUUID().toString());
+			}
+
+			headersTx.add(UtilConst.ACCESS_TOKEN, accessToken.toString());
+			logger.info("TRM Response Header[access_token]: {}", accessToken);
+
 		} catch (EmulatorException e) {
 			status = HttpStatus.CONFLICT;
 			response = new ErrorData();
@@ -317,12 +320,12 @@ public class CetipaController {
 			((ErrorData) response).setCode(e.getCode());
 			((ErrorData) response).setMessage(e.getMessage());
 		}
-		return new ResponseEntity<IEmulator>(response, headersTx, status);
+		return new ResponseEntity<>(response, headersTx, status);
 	}
 
 	/**
 	 * Obtiene los datos relacionados con el criptograma
-	 * 
+	 *
 	 * @param token
 	 * @param request
 	 * @param headersRx
@@ -349,7 +352,7 @@ public class CetipaController {
 			((ErrorData) response).setCode(e.getCode());
 			((ErrorData) response).setMessage(e.getMessage());
 		}
-		return new ResponseEntity<IEmulator>(response, headersTx, status);
+		return new ResponseEntity<>(response, headersTx, status);
 	}
 
 }

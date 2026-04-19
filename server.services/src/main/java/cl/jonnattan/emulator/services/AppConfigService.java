@@ -4,7 +4,6 @@ import cl.jonnattan.emulator.dto.AppConfigurationResponseDTO;
 import cl.jonnattan.emulator.dto.AppListConfigurationDTOResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,8 +21,11 @@ public class AppConfigService implements IConfigurations {
 
 	private static final Logger logger = LoggerFactory.getLogger(AppConfigService.class);
 
-	@Autowired
-	private IDaoConfiguration configRepository;
+	private final IDaoConfiguration configRepository;
+
+	public AppConfigService(IDaoConfiguration configRepository) {
+		this.configRepository = configRepository;
+	}
 
 	@Override
 	@Transactional
@@ -32,26 +34,29 @@ public class AppConfigService implements IConfigurations {
 		String response = "Se actualiza configuración";
 		try {
 			Configuration conf = configRepository.findByEndpoint(request.getEndPoint());
-			if (conf != null) {
-				if (request.getError().booleanValue()) {
-					conf.setCode(request.getCode());
-					conf.setMessage(request.getMessage());
-					conf.setType(TypeResponse.getType(request.getType()));
-					conf.setError(request.getError());
-				} else {
-					conf.setCode(null);
-					conf.setMessage(null);
-					conf.setType(TypeResponse.HTTP_RESPONSE_200);
-					conf.setError(false);
-				}
-				logger.info("************** UPDATE CONFIGURACION **************** ");
-				logger.info("Se reporta Código error: {}", conf.getCode());
-				logger.info("Se reporta Mensaje error: {}", conf.getMessage());
-				logger.info("Se reporta Tipo error: {}", conf.getType());
-				logger.info("************************************************* ");
-				configRepository.save(conf);
-			} else
+			if (conf == null) {
 				createConfigurations(request);
+				return response;
+			}
+			if (request.getError().booleanValue()) {
+				conf.setCode(request.getCode());
+				conf.setMessage(request.getMessage());
+				conf.setType(TypeResponse.getType(request.getType()));
+				conf.setError(request.getError());
+			} else {
+				conf.setCode(null);
+				conf.setMessage(null);
+				conf.setType(TypeResponse.HTTP_RESPONSE_200);
+				conf.setError(false);
+			}
+			logger.info("************** UPDATE CONFIGURACION **************** ");
+			logger.info("Se reporta Código error: {}", conf.getCode());
+			logger.info("Se reporta Mensaje error: {}", conf.getMessage());
+			logger.info("Se reporta Tipo error: {}", conf.getType());
+			logger.info("************************************************* ");
+			configRepository.save(conf);
+		} catch (ConfException e) {
+			throw e;
 		} catch (Exception e) {
 			throw new ConfException("[" + e.getMessage() + "] Actualizando Configuración");
 		}
@@ -100,38 +105,41 @@ public class AppConfigService implements IConfigurations {
 			Configuration conf = configRepository.findByEndpoint(request.getEndPoint());
 			if (conf != null) {
 				response = updateConfigurations(request);
-			} else
+			} else {
 				response = createConfigurations(request);
+			}
+		} catch (ConfException e) {
+			throw e;
 		} catch (Exception e) {
 			throw new ConfException(e.getMessage());
 		}
 		return response;
 	}
 
-    @Override
-    @Transactional(readOnly = true)
-    public AppListConfigurationDTOResponse getConfigurations() throws ConfException {
-        logger.info("Service para listar las configuraciones");
-        AppListConfigurationDTOResponse configurations = new AppListConfigurationDTOResponse();
-        List<AppConfigurationResponseDTO> list = configurations.getConfigurations();
-        try {
-            Iterable<Configuration> confs = configRepository.findAll();
-            for(Configuration c : confs) {
-                AppConfigurationResponseDTO config = new AppConfigurationResponseDTO();
-                config.setType( c.getType().getValue() );
-                config.setCode( c.getCode() );
-                config.setMessage( c.getMessage() );
-                config.setError( c.getError() );
-                config.setEndPoint( c.getEndpoint() );
-                config.setLastUpdate( c.getUpdatedAt() );
-                list.add( config );
-            }
-            configurations.setConfigurations( list );
-        } catch (Exception e) {
-            throw new ConfException(e.getMessage());
-        }
-        return configurations;
-    }
+	@Override
+	@Transactional(readOnly = true)
+	public AppListConfigurationDTOResponse getConfigurations() throws ConfException {
+		logger.info("Service para listar las configuraciones");
+		AppListConfigurationDTOResponse configurations = new AppListConfigurationDTOResponse();
+		List<AppConfigurationResponseDTO> list = configurations.getConfigurations();
+		try {
+			Iterable<Configuration> confs = configRepository.findAll();
+			for(Configuration c : confs) {
+				AppConfigurationResponseDTO config = new AppConfigurationResponseDTO();
+				config.setType( c.getType().getValue() );
+				config.setCode( c.getCode() );
+				config.setMessage( c.getMessage() );
+				config.setError( c.getError() );
+				config.setEndPoint( c.getEndpoint() );
+				config.setLastUpdate( c.getUpdatedAt() );
+				list.add( config );
+			}
+			configurations.setConfigurations( list );
+		} catch (Exception e) {
+			throw new ConfException(e.getMessage());
+		}
+		return configurations;
+	}
 
 	@SuppressWarnings("null")
 	@Override
