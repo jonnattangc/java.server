@@ -154,12 +154,12 @@ export ENV=local
 export PORT=8089
 export CONTEXT=/emulator
 export LOG_LEVEL=DEBUG
-export AES_KEY=mAFaa23csdas5sdf12sght549u87y8adnjk
+export AES_KEY=''
 export BD_ADDR=localhost
 export BD_PORT=3306
 export BD_NAME=emulator
 export BD_USER=emulator
-export BD_PASS=emulator
+export BD_PASS=''
 
 mvn clean package
 java -Xmx1024m -Xms512m -jar server.app/target/server.app-1.2.0-SNAPSHOT.jar
