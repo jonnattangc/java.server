@@ -70,7 +70,7 @@ java.server/
 | POST   | `/config/save`    | `AppConfigurationRequestDTO`     | `String`                          | Persiste la configuración.                    |
 | GET    | `/config/list`    | —                                | `AppListConfigurationDTOResponse` | Lista todas las configuraciones.              |
 
-### Pagos y Tokens (ApiTec) — `CetipaController`
+### Pagos y Tokens (TecApi) — `CetipaController`
 
 | Método | Path                                              | Request                                    | Response       | Descripción                                               |
 |--------|---------------------------------------------------|--------------------------------------------|----------------|-----------------------------------------------------------|
