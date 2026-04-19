@@ -28,8 +28,6 @@ spring:
 
   jackson:
     date-format: "yyyy-MM-dd'T'HH:mm:ss" 
-    serialization:
-      WRITE_DATES_WITH_ZONE_ID: true
 
 server:
   address: 0.0.0.0
