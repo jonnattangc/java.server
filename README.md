@@ -17,7 +17,7 @@
 
 ## Resumen
 
-Emulador de APIs de terceros (ApiTec, ChileExpress, Edenred, JUNAEB) construido para apoyar el desarrollo mobile y pruebas de integración. Expone endpoints REST que replican el comportamiento de servicios de pago, tokenización, autenticación y gestión de tarjetas, y persiste transacciones, tarjetas, usuarios y configuraciones en MySQL.
+Emulador de APIs de terceros construido para apoyar el desarrollo mobile y pruebas de integración. Expone endpoints REST que replican el comportamiento de servicios de pago, tokenización, autenticación y gestión de tarjetas, y persiste transacciones, tarjetas, usuarios y configuraciones en MySQL.
 
 ## Tecnologías
 
@@ -102,8 +102,8 @@ java.server/
 
 | Método | Path                      | Request                   | Response   | Descripción                     |
 |--------|---------------------------|---------------------------|------------|---------------------------------|
-| POST   | `/edr/login/tickettest`   | `MultiValueMap` (headers) | `String`   | Logon de prueba (Edenred).      |
-| POST   | `/edr/login/ticket`       | `MultiValueMap` (headers) | `String`   | Logon Edenred.                  |
+| POST   | `/edr/login/tickettest`   | `MultiValueMap` (headers) | `String`   | Logon de prueba (EDR).      |
+| POST   | `/edr/login/ticket`       | `MultiValueMap` (headers) | `String`   | Logon EDR.                  |
 | POST   | `/edr/login/beanuj`       | `MultiValueMap` (headers) | `String`   | Logon JUNAEB.                   |
 
 ### EDR-EGD Foods
