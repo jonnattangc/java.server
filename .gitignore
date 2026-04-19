@@ -14,4 +14,7 @@ antrun
 .project
 .classpath
 .factorypath
-*.jar
+.vscode/
+.cursor/*
+!.cursor/skills/
+!.cursor/skills/**

@@ -1,12 +1,13 @@
 #!/bin/sh
 
 # Ruta donde est'a instalado el SDK
-#export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-17.0.3.1.jdk/Contents/Home
+#export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk.jdk/Contents/Home
 # ac'a poner la ruta donde bajaron el ID
 #export MAVEN_HOME=/home/jonnattan/utils/apache-maven-3.8.6
 export MAVEN_HOME=/Users/jonnattangriffiths/tools/apache-maven-3.9.14
 export PATH=$PATH:$MAVEN_HOME/bin
 
+export ENV=local
 export BD_ADDR=dev.jonnattan.com
 export BD_PORT=3306
 export BD_NAME=emulator
@@ -16,6 +17,7 @@ export PORT=8089
 export CONTEXT=/emulator
 export LOG_LEVEL=DEBUG
 export AES_KEY=mAFaa23csdas5sdf12sght549u87y8adnjk
+
 
 # Define un nombre al war que se genera
 export JAR_NAME=server.jar

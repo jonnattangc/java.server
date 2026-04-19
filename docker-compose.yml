@@ -6,16 +6,8 @@ services:
     restart: always
     deploy:
       replicas: 1
-    environment:
-      PORT: 8089
-      CONTEXT: /emulator
-      BD_ADDR: bd.jonna.cl
-      BD_PORT: 3306
-      BD_NAME: emulator
-      BD_USER: jonnattan
-      BD_PASS: wsxzaq123
-      LOG_LEVEL: INFO
-      AES_KEY: mAFaa23csdas5sdf12sght549u87y8adnjk
+  	env_file:
+          - ../envs/java_server.env
     networks:
        - db-net
     ports:
