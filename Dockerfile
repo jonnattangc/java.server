@@ -28,7 +28,7 @@ WORKDIR /app
 
 USER jonnattan
 
-ENV PORT 8089
+ENV PORT 8050
 ENV CONTEXT /emulator
 ENV LOG_LEVEL debug
 ENV BD_ADDR ''
@@ -38,7 +38,6 @@ ENV BD_USER ''
 ENV BD_PASS ''
 ENV ENV dev
 
-EXPOSE 8089
+EXPOSE 8050
 
-# CMD [ "/bin/sh", "./run.sh" ]
 CMD [ "java", "-Xmx512m", "-Xms256m", "-jar", "servidor.jar" ]
